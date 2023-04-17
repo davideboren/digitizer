@@ -8,3 +8,6 @@ This is a GUI utility to streamline the evolution tree building process with a s
 Output is a C++ header which can then be included in the Tyrannomon source files.
 
 Digitizer also contains a function that automates the file conversions from transparent PNG to BMP, which is Tyrannomon's preferred file format.
+
+Both Tyrannomon and Digitizer are built around the sprite format of Tortoiseshel's excellent 16x16 Digimon sprite resource.
+https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/
