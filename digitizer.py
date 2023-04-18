@@ -89,6 +89,7 @@ def run_gui():
                 if x[fdir] == 0:
                     y[fdir] += 40
 
+    clicked_mon = MonsterImg
     selected_mons = pg.sprite.LayeredUpdates()
 
     #Info 
@@ -149,39 +150,57 @@ def run_gui():
                 if event.button == 1:
                     for mon in mons[selected_stage]:
                         if mon.rect.collidepoint(event.pos):
-                            mon.dragging = True
-                            mouse_x, mouse_y = event.pos
-                            offset_x = mon.rect.x - mouse_x
-                            offset_y = mon.rect.y - mouse_y
-                            selected_mons.add(mon)
-                            mons[selected_stage].remove(mon)
+                            selected_mons.add(MonsterImg(mon.filepath,(mon.rect.x,mon.rect.y)))
                     for mon in selected_mons:
                         if mon.rect.collidepoint(event.pos):
+                            clicked_mon = mon
+                            mon.border_color = (50,255,0)
+                            mon.redraw()
                             mon.dragging = True
                             mouse_x, mouse_y = event.pos
                             offset_x = mon.rect.x - mouse_x
                             offset_y = mon.rect.y - mouse_y
+                elif event.button == 2:
+                    for mon in selected_mons:
+                        if mon.rect.collidepoint(event.pos):
+                            selected_mons.remove(mon)
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
-                    for mon in mons[selected_stage]:
-                        mon.dragging = False
                     for mon in selected_mons:
                         mon.dragging = False
+                        if not mon.rect.colliderect(sandbox.rect):
+                            selected_mons.remove(mon)
             elif event.type == pg.MOUSEMOTION:
                 for mon in selected_mons:
                     if mon.dragging:
+                        if not mon.rect.colliderect(sandbox.rect):
+                            if mon.surf.get_alpha() != 125:
+                                mon.surf.set_alpha(125)
+                        elif mon.surf.get_alpha() == 125:
+                            mon.surf.set_alpha(255)
                         mouse_x, mouse_y = event.pos
                         mon.rect.x = mouse_x + offset_x
                         mon.rect.y = mouse_y + offset_y
+
         moused_over = ""
         for mon in mons[selected_stage]:
             if mon.rect.collidepoint(pg.mouse.get_pos()) and moused_over != mon.name:
+                mon.border_color = (255,255,255)
+                mon.redraw()
                 moused_over = mon.name
                 mon_indicator = mon_font.render(mon.name,False,(255,200,100),(25,25,25))
+            elif mon.border_color != (200,200,200):
+                mon.border_color = (200,200,200)
+                mon.redraw()
         for mon in selected_mons:
             if mon.rect.collidepoint(pg.mouse.get_pos()) and moused_over != mon.name:
+                mon.border_color = (255,255,255)
+                mon.redraw()
                 moused_over = mon.name
                 mon_indicator = mon_font.render(mon.name,False,(255,200,100),(25,25,25))
+            elif mon.border_color != (200,200,200):
+                mon.border_color = (200,200,200)
+                mon.redraw()
 
         #Draw
         screen.fill(SCREEN_BG)
