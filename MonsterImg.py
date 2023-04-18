@@ -6,7 +6,7 @@ class MonsterImg(pygame.sprite.Sprite):
     
         super(MonsterImg,self).__init__()
         
-        self.name = filepath
+        self.name = filepath.split('/')[-1].split('.')[0]
         
         self.border_color = (200,200,200)
         self.spritesheet_coords = (0,0)
