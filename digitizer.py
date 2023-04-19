@@ -124,7 +124,7 @@ def run_gui():
     info.add(menu_bar)
     info.add(menu_bar_file)
 
-    stage_sel = "digitama"
+    stage_sel = list(STAGE_ORDER.keys())[0]
 
     moused_over = "" 
     mon_indicator = mon_font.render(moused_over,False,(255,220,110),(25,25,25))
@@ -170,8 +170,7 @@ def run_gui():
                             selected_mons.add(Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
                     for mon in selected_mons:
                         if mon.rect.collidepoint(event.pos):
-                            mon.border_color = (50,255,0)
-                            mon.redraw()
+                            mon.set_border((50,255,0))
                             mon.dragging = True
                             mouse_x, mouse_y = event.pos
                             offset_x = mon.rect.x - mouse_x
@@ -179,6 +178,8 @@ def run_gui():
                 elif event.button == 2:
                     for mon in selected_mons:
                         if mon.rect.collidepoint(event.pos):
+                            if mon == src_mon:
+                                src_mon = None
                             selected_mons.remove(mon)
                 elif event.button == 3:
                     for mon in selected_mons:
@@ -225,25 +226,20 @@ def run_gui():
         moused_over = ""
         for mon in mons[stage_sel]:
             if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(mon_pane.rect) and moused_over != mon.name:
-                mon.border_color = (255,255,255)
-                mon.redraw()
+                mon.set_border((255,255,255))
                 moused_over = mon.name
                 mon_indicator = mon_font.render(mon.name,False,(255,200,100),(25,25,25))
             elif mon.border_color != (200,200,200):
-                mon.border_color = (200,200,200)
-                mon.redraw()
+                mon.set_border((200,200,200))
         for mon in selected_mons:
             if mon.rect.collidepoint(mouse_pos) and moused_over != mon.name:
-                mon.border_color = (255,255,255)
-                mon.redraw()
+                mon.set_border((255,255,255))
                 moused_over = mon.name
                 mon_indicator = mon_font.render(mon.name,False,(255,200,100),(25,25,25))
             elif mon.border_color != (200,200,200):
-                mon.border_color = (200,200,200)
-                mon.redraw()
+                mon.set_border((200,200,200))
         if src_mon:
-            src_mon.border_color = (255,135,0)
-            src_mon.redraw()
+            src_mon.set_border((255,135,0))
 
         #Draw
         screen.fill(SCREEN_BG)

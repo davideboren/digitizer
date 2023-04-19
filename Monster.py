@@ -42,6 +42,7 @@ class Monster(pygame.sprite.Sprite):
             self.surf.blit(pygame.transform.scale(self.sprite,(32,32)),(1,1))
             self.ticks = 0
 
-    def redraw(self):
+    def set_border(self,color):
+            self.border_color = color
             self.surf.fill(self.border_color)
             self.surf.blit(pygame.transform.scale(self.sprite,(32,32)),(1,1))
