@@ -1,13 +1,19 @@
+#Class for Monster instances
+
 import pygame
 from random import randint
 
-class MonsterImg(pygame.sprite.Sprite):
+class Monster(pygame.sprite.Sprite):
     def __init__(self, filepath, coords):
     
-        super(MonsterImg,self).__init__()
+        super(Monster,self).__init__()
         
         self.filepath = filepath
         self.name = filepath.split('/')[-1].split('.')[0]
+        self.stage = filepath.split('/')[-2]
+        self.move_style = "walk"
+        self.bg = ""
+        self.evos = []
         
         self.border_color = (200,200,200)
         self.spritesheet_coords = (0,0)
@@ -24,6 +30,8 @@ class MonsterImg(pygame.sprite.Sprite):
         
         self.rect.move_ip(coords)
         self.dragging = False
+
+        
     
     def update(self):
         self.ticks += 1
