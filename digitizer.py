@@ -14,7 +14,7 @@ from MonsterImg import MonsterImg
 
 from pygame.locals import (
     K_ESCAPE,
-    K_1,K_2,K_3,K_4,K_5,K_6,
+    K_0,K_1,K_2,K_3,K_4,K_5,K_6,
     KEYDOWN,
     QUIT
 )
@@ -34,12 +34,16 @@ def run_gui():
     # Background Panes
     panes = pg.sprite.LayeredUpdates()
 
+    mon_pane_border = pg.sprite.Sprite()
+    mon_pane_border.surf = pg.Surface((270, SCREEN_HEIGHT - PAD*2 - 24),)
+    mon_pane_border.surf.fill(SCREEN_BG)
+    mon_pane_border.rect = mon_pane_border.surf.get_rect().move(16,24 + PAD)
+    pg.draw.rect(mon_pane_border.surf, MON_PANE_BG_COLOR,     (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), border_radius=4)
+    pg.draw.rect(mon_pane_border.surf, (255,255,255),  (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), border_radius=4, width=2)
     mon_pane = pg.sprite.Sprite()
-    mon_pane.surf = pg.Surface((270, SCREEN_HEIGHT - PAD*2 - 24),)
-    mon_pane.surf.fill(SCREEN_BG)
-    mon_pane.rect = mon_pane.surf.get_rect().move(16,24 + PAD)
-    pg.draw.rect(mon_pane.surf, (40,40,40),     (0,0,mon_pane.rect.w, mon_pane.rect.h), border_radius=4)
-    pg.draw.rect(mon_pane.surf, (255,255,255),  (0,0,mon_pane.rect.w, mon_pane.rect.h), border_radius=4, width=2)
+    mon_pane.surf = pg.Surface((266, SCREEN_HEIGHT - PAD*2 - 24 - 24 - 2),)
+    mon_pane.surf.fill(MON_PANE_BG_COLOR)
+    mon_pane.rect = mon_pane.surf.get_rect().move(16 + 2, 24 + 24 + PAD)
 
     sandbox = pg.sprite.Sprite()
     sandbox.surf = pg.Surface((736, SCREEN_HEIGHT - PAD*2 - 24))
@@ -63,6 +67,7 @@ def run_gui():
     pg.draw.rect(preview_pane.surf, (20,20,30),      (0,0,preview_pane.rect.w, preview_pane.rect.h), border_radius=4)
     pg.draw.rect(preview_pane.surf, (255,255,255),   (0,0,preview_pane.rect.w, preview_pane.rect.h), border_radius=4, width = 2)
 
+    panes.add(mon_pane_border)
     panes.add(mon_pane)
     panes.add(sandbox)
     panes.add(bg_pane)
@@ -98,7 +103,7 @@ def run_gui():
     menu_bar = pg.sprite.Sprite()
     menu_bar.surf = pg.Surface((SCREEN_WIDTH, 24))
     menu_bar.rect = menu_bar.surf.get_rect()
-    menu_bar.surf.fill((10,30,70))
+    menu_bar.surf.fill(MENU_BG_COLOR)
     pg.draw.line(menu_bar.surf,(5,15,35),
                  (0,menu_bar.rect[3] - 2),
                  (SCREEN_WIDTH,menu_bar.rect[3] - 2),
@@ -106,13 +111,13 @@ def run_gui():
 
     mon_font = pg.font.Font('grand9k.ttf',14)
     menu_bar_file = pg.sprite.Sprite()
-    menu_bar_file.surf = mon_font.render('File',False,(60,90,210),(10,30,70))
+    menu_bar_file.surf = mon_font.render('File',False,(200,200,200),MENU_BG_COLOR)
     menu_bar_file.rect = menu_bar_file.surf.get_rect().move(2,0)
 
     info.add(menu_bar)
     info.add(menu_bar_file)
 
-    selected_stage = "baby"
+    stage_sel = "baby"
 
     moused_over = "" 
     mon_indicator = mon_font.render(moused_over,False,(255,220,110),(25,25,25))
@@ -129,18 +134,20 @@ def run_gui():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
+                elif event.key == K_0:
+                    stage_sel = "digitama"
                 elif event.key == K_1:
-                    selected_stage = "baby"
+                    stage_sel = "baby"
                 elif event.key == K_2:
-                    selected_stage = "baby_ii"
+                    stage_sel = "baby_ii"
                 elif event.key == K_3:
-                    selected_stage = "child"
+                    stage_sel = "child"
                 elif event.key == K_4:
-                    selected_stage = "adult"
+                    stage_sel = "adult"
                 elif event.key == K_5:
-                    selected_stage = "perfect"
+                    stage_sel = "perfect"
                 elif event.key == K_6:
-                    selected_stage = "ultimate"
+                    stage_sel = "ultimate"
                 
             elif event.type == QUIT:
                 running = False
@@ -148,8 +155,9 @@ def run_gui():
             #Drag and Drop
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    for mon in mons[selected_stage]:
-                        if mon.rect.collidepoint(event.pos):
+                    selected_mon_names = [mon.name for mon in selected_mons]
+                    for mon in mons[stage_sel]:
+                        if mon.rect.collidepoint(event.pos) and mon.name not in selected_mon_names:
                             selected_mons.add(MonsterImg(mon.filepath,(mon.rect.x,mon.rect.y)))
                     for mon in selected_mons:
                         if mon.rect.collidepoint(event.pos):
@@ -181,10 +189,17 @@ def run_gui():
                         mouse_x, mouse_y = event.pos
                         mon.rect.x = mouse_x + offset_x
                         mon.rect.y = mouse_y + offset_y
+            elif event.type == pg.MOUSEWHEEL:
+                mouse_pos = pg.mouse.get_pos()
+                if mon_pane.rect.collidepoint(mouse_pos):
+                    mon_pane.surf.scroll(0,event.y*15)
+                    for mon in mons[stage_sel]:
+                        mon.rect.y += 15*event.y
 
+        mouse_pos = pg.mouse.get_pos()
         moused_over = ""
-        for mon in mons[selected_stage]:
-            if mon.rect.collidepoint(pg.mouse.get_pos()) and moused_over != mon.name:
+        for mon in mons[stage_sel]:
+            if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(mon_pane.rect) and moused_over != mon.name:
                 mon.border_color = (255,255,255)
                 mon.redraw()
                 moused_over = mon.name
@@ -193,7 +208,7 @@ def run_gui():
                 mon.border_color = (200,200,200)
                 mon.redraw()
         for mon in selected_mons:
-            if mon.rect.collidepoint(pg.mouse.get_pos()) and moused_over != mon.name:
+            if mon.rect.collidepoint(mouse_pos) and moused_over != mon.name:
                 mon.border_color = (255,255,255)
                 mon.redraw()
                 moused_over = mon.name
@@ -206,11 +221,15 @@ def run_gui():
         screen.fill(SCREEN_BG)
 
         for pane in panes:
+            pane.update()
             screen.blit(pane.surf,pane.rect)
+        
+        mon_pane.surf.fill(MON_PANE_BG_COLOR)
 
-        for mon in mons[selected_stage]:
+        for mon in mons[stage_sel]:
             mon.update()
-            screen.blit(mon.surf,mon.rect)
+            mon_pane.surf.blit(mon.surf,(mon.rect.x-mon_pane.rect.left, mon.rect.y-mon_pane.rect.top, 
+                                         mon.rect.w, mon.rect.h))
 
         for mon in selected_mons:
             mon.update()
