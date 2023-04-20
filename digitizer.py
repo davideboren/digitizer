@@ -11,6 +11,7 @@ import os
 import re
 
 from Monster import Monster
+from Dropdown import Dropdown
 
 def run_gui():
 
@@ -126,10 +127,7 @@ def run_gui():
                  (SCREEN_W,menu_bar.rect[3] - 2),
                  width = 2)
 
-    
-    menu_bar_file = pg.sprite.Sprite()
-    menu_bar_file.surf = mon_font.render('File',False,(200,200,200),MENU_BG_COLOR)
-    menu_bar_file.rect = menu_bar_file.surf.get_rect().move(2,0)
+    menu_bar_file = Dropdown("File")
 
     info.add(menu_bar)
     info.add(menu_bar_file)
@@ -148,6 +146,8 @@ def run_gui():
         clock.tick(60)
         
         for event in pg.event.get():
+
+            menu_bar_file.handleEvents(event)
         
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -266,6 +266,7 @@ def run_gui():
             screen.blit(mon.surf,mon.rect)
 
         for i in info:
+            i.update()
             screen.blit(i.surf, i.rect)
         if moused_over:
             screen.blit(mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))

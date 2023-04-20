@@ -31,8 +31,6 @@ class Monster(pygame.sprite.Sprite):
         self.rect.move_ip(coords)
         self.dragging = False
 
-        
-    
     def update(self):
         self.ticks += 1
         if(self.ticks == 30):
