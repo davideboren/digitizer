@@ -33,9 +33,12 @@ def run_gui():
     mon_pane_border.surf = pg.Surface((270, SCREEN_H - PAD*2 - 24),)
     mon_pane_border.surf.fill(SCREEN_BG)
     mon_pane_border.rect = mon_pane_border.surf.get_rect().move(16,24 + PAD)
-    pg.draw.rect(mon_pane_border.surf, PANE_BG_LITE,     (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), border_radius=4)
-    pg.draw.rect(mon_pane_border.surf, FG_WHITE,  (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), border_radius=4, width=2)
-    
+    pg.draw.rect(mon_pane_border.surf, PANE_BG_LITE,
+                 (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), 
+                 border_radius=4)
+    pg.draw.rect(mon_pane_border.surf, FG_WHITE,
+                 (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), 
+                 border_radius=4, width=2)
     mon_pane = pg.sprite.Sprite()
     mon_pane.surf = pg.Surface((266, SCREEN_H - PAD*2 - 24 - 24 - 2),)
     mon_pane.surf.fill(PANE_BG_DARK)
@@ -43,30 +46,47 @@ def run_gui():
     
     mon_pane_btn = pg.sprite.Sprite()
     mon_pane_btn.surf = mon_font.render("Stage",False,FG_ORANGE,PANE_BG_LITE)
-    mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
+    mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(
+        mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
     
     sandbox = pg.sprite.Sprite()
     sandbox.surf = pg.Surface((736, SCREEN_H - PAD*2 - 24))
-    sandbox.rect = sandbox.surf.get_rect().move(mon_pane.rect.right + PAD, 24 + PAD)
-    pg.draw.rect(sandbox.surf, (20,20,30), (0,0,sandbox.rect.w, sandbox.rect.h), border_radius=4)
+    sandbox.rect = sandbox.surf.get_rect().move(
+        mon_pane.rect.right + PAD, 24 + PAD)
+    pg.draw.rect(sandbox.surf, (20,20,30), 
+                 (0,0,sandbox.rect.w, sandbox.rect.h), border_radius=4)
     for l in range(0,sandbox.rect.w,50): #Gridlines
-        pg.draw.line(sandbox.surf,(30,30,40),(l,0),(l,sandbox.rect.h),width=2)
+        pg.draw.line(sandbox.surf,(30,30,40),(l,0),
+                     (l,sandbox.rect.h),width=2)
     for l in range(0,sandbox.rect.h,50):
-        pg.draw.line(sandbox.surf,(30,30,40),(0,l),(sandbox.rect.right,l),width=2)
-    pg.draw.rect(sandbox.surf, FG_WHITE, (0,0,sandbox.rect.w, sandbox.rect.h), border_radius=4, width = 2)
+        pg.draw.line(sandbox.surf,(30,30,40),(0,l),
+                     (sandbox.rect.right,l),width=2)
+    pg.draw.rect(sandbox.surf, FG_WHITE, 
+                 (0,0,sandbox.rect.w, sandbox.rect.h), 
+                 border_radius=4, width = 2)
 
 
     bg_pane = pg.sprite.Sprite()
     bg_pane.surf = pg.Surface((BG_PANE_W,BG_PANE_H))
-    bg_pane.rect = bg_pane.surf.get_rect().move(sandbox.rect.right + PAD, 24 + PAD)
-    pg.draw.rect(bg_pane.surf, PANE_BG_DARK,      (0,0,bg_pane.rect.w, bg_pane.rect.h), border_radius=4)
-    pg.draw.rect(bg_pane.surf, FG_WHITE,   (0,0,bg_pane.rect.w, bg_pane.rect.h), border_radius=4, width = 2)
+    bg_pane.rect = bg_pane.surf.get_rect().move(
+        sandbox.rect.right + PAD, 24 + PAD)
+    pg.draw.rect(bg_pane.surf, PANE_BG_DARK,
+                 (0,0,bg_pane.rect.w, bg_pane.rect.h), 
+                 border_radius=4)
+    pg.draw.rect(bg_pane.surf, FG_WHITE,
+                 (0,0,bg_pane.rect.w, bg_pane.rect.h), 
+                 border_radius=4, width = 2)
 
     preview_pane = pg.sprite.Sprite()
     preview_pane.surf = pg.Surface((PREVIEW_PANE_W,PREVIEW_PANE_H))
-    preview_pane.rect = preview_pane.surf.get_rect().move(sandbox.rect.right + PAD, SCREEN_H - PAD - 200)
-    pg.draw.rect(preview_pane.surf, PANE_BG_DARK,      (0,0,preview_pane.rect.w, preview_pane.rect.h), border_radius=4)
-    pg.draw.rect(preview_pane.surf, FG_WHITE,   (0,0,preview_pane.rect.w, preview_pane.rect.h), border_radius=4, width = 2)
+    preview_pane.rect = preview_pane.surf.get_rect().move(
+        sandbox.rect.right + PAD, SCREEN_H - PAD - 200)
+    pg.draw.rect(preview_pane.surf, PANE_BG_DARK,
+                 (0,0,preview_pane.rect.w, preview_pane.rect.h), 
+                 border_radius=4)
+    pg.draw.rect(preview_pane.surf, FG_WHITE,
+                 (0,0,preview_pane.rect.w, preview_pane.rect.h), 
+                 border_radius=4, width = 2)
 
     panes.add(mon_pane_border)
     panes.add(mon_pane)
@@ -149,7 +169,7 @@ def run_gui():
         
         for event in pg.event.get():
 
-            menu_bar_file.handleEvents(event)
+            menu_bar_file.handle_events(event)
         
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
@@ -175,7 +195,8 @@ def run_gui():
                     selected_mon_names = [mon.name for mon in sandbox_mons[sb_tab]]
                     for mon in mons[stage_sel]:
                         if mon.rect.collidepoint(event.pos) and mon.name not in selected_mon_names:
-                            sandbox_mons[sb_tab].add(Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
+                            sandbox_mons[sb_tab].add(
+                                Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
                     for mon in sandbox_mons[sb_tab]:
                         if mon.rect.collidepoint(event.pos):
                             mon.set_border((50,255,0))

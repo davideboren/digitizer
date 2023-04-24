@@ -14,7 +14,7 @@ class Dropdown(pg.sprite.Sprite):
         self.rect = self.surf.get_rect()
         self.pressed = False
     
-    def handleEvents(self,event):
+    def handle_events(self,event):
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 self.pressed = True
