@@ -80,6 +80,7 @@ def run_gui():
     x = {}
     y = {}
     cols = 6
+    last_dir = ""
     for r,d,f in os.walk("sprites/"):
         for dir in d:
             mons[dir] = pg.sprite.LayeredUpdates()
@@ -89,6 +90,14 @@ def run_gui():
             if 'png' in file:
                 filename = os.path.join(r,file).replace('\\','/')
                 fdir = filename.split('/')[1]
+                if fdir != last_dir:
+                    last_dir = fdir
+                    load_msg = mon_font.render(f"Loading sprites: {last_dir}",False,FG_ORANGE,SCREEN_BG)
+                    screen.fill(SCREEN_BG)
+                    screen.blit(load_msg,
+                                (SCREEN_W/2 - load_msg.get_width()/2,
+                                 SCREEN_H/2 - load_msg.get_height()/2))
+                    pg.display.flip()
                 mons[fdir].add(Monster(filename,
                                         (mon_pane.rect[0] + PAD + x[fdir] , 
                                         mon_pane.rect[1] + PAD + y[fdir])))
