@@ -9,9 +9,15 @@ from config import *
 from PIL import Image
 import os
 import re
+import pickle
 
 from Monster import Monster
 from Dropdown import Dropdown
+from Sandbox import Sandbox
+
+def save(mons):
+    with open('save.pkl','wb') as outp:
+        pickle.dump(mons,outp,pickle.HIGHEST_PROTOCOL)
 
 def run_gui():
 
@@ -25,6 +31,8 @@ def run_gui():
     screen = pg.display.set_mode((SCREEN_W,SCREEN_H))
     
     clock = pg.time.Clock()
+
+    running = True
 
     # Background Panes
     panes = pg.sprite.LayeredUpdates()
@@ -49,22 +57,7 @@ def run_gui():
     mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(
         mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
     
-    sandbox = pg.sprite.Sprite()
-    sandbox.surf = pg.Surface((736, SCREEN_H - PAD*2 - 24))
-    sandbox.rect = sandbox.surf.get_rect().move(
-        mon_pane.rect.right + PAD, 24 + PAD)
-    pg.draw.rect(sandbox.surf, (20,20,30), 
-                 (0,0,sandbox.rect.w, sandbox.rect.h), border_radius=4)
-    for l in range(0,sandbox.rect.w,50): #Gridlines
-        pg.draw.line(sandbox.surf,(30,30,40),(l,0),
-                     (l,sandbox.rect.h),width=2)
-    for l in range(0,sandbox.rect.h,50):
-        pg.draw.line(sandbox.surf,(30,30,40),(0,l),
-                     (sandbox.rect.right,l),width=2)
-    pg.draw.rect(sandbox.surf, FG_WHITE, 
-                 (0,0,sandbox.rect.w, sandbox.rect.h), 
-                 border_radius=4, width = 2)
-
+    sandbox = Sandbox()
 
     bg_pane = pg.sprite.Sprite()
     bg_pane.surf = pg.Surface((BG_PANE_W,BG_PANE_H))
@@ -158,10 +151,13 @@ def run_gui():
                  (SCREEN_W,menu_bar.rect[3] - 2),
                  width = 2)
 
-    menu_bar_file = Dropdown("File")
+    menu_bar_file = Dropdown(
+    [PANE_BG_DARK, PANE_BG_LITE],
+    [PANE_BG_DARK, PANE_BG_LITE],
+    0, 0, 40, 22, 
+    "File", ["New", "Open", "Exit"])
 
     info.add(menu_bar)
-    info.add(menu_bar_file)
 
     stage_sel = list(STAGE_ORDER.keys())[0]
 
@@ -170,16 +166,16 @@ def run_gui():
 
     mon_sel = None
 
-    running = True
-
     while running:
         
         clock.tick(60)
-        
-        for event in pg.event.get():
 
-            menu_bar_file.handle_events(event)
+        event_list = pg.event.get()
+
+        menu_bar_file.update(event_list)
         
+        for event in event_list:
+
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
@@ -195,6 +191,8 @@ def run_gui():
                     sb_tab = (sb_tab + 1) % len(sandbox_mons)
                 elif event.key == K_a:
                     sb_tab = (sb_tab - 1) % len(sandbox_mons)
+                elif event.key == K_o:
+                    save(sandbox_mons)
             elif event.type == QUIT:
                 running = False
                 
@@ -313,6 +311,7 @@ def run_gui():
         if moused_over:
             screen.blit(mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))
 
+        menu_bar_file.draw(screen)
         pg.display.flip()
 
 def convert_sprites():

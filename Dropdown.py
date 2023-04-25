@@ -1,36 +1,54 @@
+#Mostly yanked from stackoverflow
+
 import pygame as pg
 from config import *
 
-class Dropdown(pg.sprite.Sprite):
-    def __init__(self,title):
+class Dropdown():
 
-        super(Dropdown,self).__init__()
-
-        self.title = title
+    def __init__(self, color_menu, color_option, x, y, w, h, main, options):
+        self.color_menu = color_menu
+        self.color_option = color_option
+        self.rect = pg.Rect(x, y, w, h)
         self.font = pg.font.Font("grand9k.ttf",14)
-        self.fg = FG_WHITE
-        self.bg = PANE_BG_DARK
-        self.surf = self.font.render(title,False,self.fg,self.bg)
-        self.rect = self.surf.get_rect()
-        self.pressed = False
-    
-    def handle_events(self,event):
-        if event.type == pg.MOUSEBUTTONDOWN:
-            if event.button == 1 and self.rect.collidepoint(event.pos):
-                self.pressed = True
-        if event.type == pg.MOUSEBUTTONUP:
-            if event.button == 1 and self.pressed == True:
-                self.pressed = False
-                if self.rect.collidepoint(event.pos):
-                    self.bg = PANE_BG_LITE
-        if event.type == pg.MOUSEMOTION:
-            if self.rect.collidepoint(event.pos):
-                self.bg = PANE_BG_LITE
-            elif self.bg == PANE_BG_LITE:
-                self.bg = PANE_BG_DARK
-                
+        self.main = main
+        self.options = options
+        self.draw_menu = False
+        self.menu_active = False
+        self.active_option = -1
 
-    def update(self):
-        if self.pressed and self.bg != PANE_BG_DARK:
-            self.bg = PANE_BG_DARK
-        self.surf = self.font.render(self.title,False,self.fg,self.bg)
+    def draw(self, surf):
+        pg.draw.rect(surf, self.color_menu[self.menu_active], self.rect, 0)
+        msg = self.font.render(self.main,False,FG_WHITE,self.color_menu[self.menu_active])
+        surf.blit(msg, msg.get_rect(center = self.rect.center))
+
+        if self.draw_menu:
+            for i, text in enumerate(self.options):
+                rect = self.rect.copy()
+                rect.y += (i+1) * self.rect.height
+                pg.draw.rect(surf, self.color_option[1 if i == self.active_option else 0], rect, 0)
+                msg = self.font.render(text,False,FG_WHITE)
+                surf.blit(msg, msg.get_rect(center = rect.center))
+
+    def update(self, event_list):
+        mpos = pg.mouse.get_pos()
+        self.menu_active = self.rect.collidepoint(mpos)
+        
+        self.active_option = -1
+        for i in range(len(self.options)):
+            rect = self.rect.copy()
+            rect.y += (i+1) * self.rect.height
+            if rect.collidepoint(mpos):
+                self.active_option = i
+                break
+
+        if not self.menu_active and self.active_option == -1:
+            self.draw_menu = False
+
+        for event in event_list:
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                if self.menu_active:
+                    self.draw_menu = not self.draw_menu
+                elif self.draw_menu and self.active_option >= 0:
+                    self.draw_menu = False
+                    return self.active_option
+        return -1
