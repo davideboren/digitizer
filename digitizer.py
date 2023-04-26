@@ -84,7 +84,7 @@ def run_gui():
     panes.add(mon_pane_border)
     panes.add(mon_pane)
     panes.add(mon_pane_btn)
-    panes.add(sandbox)
+    #panes.add(sandbox)
     panes.add(bg_pane)
     panes.add(preview_pane)
     
@@ -117,10 +117,6 @@ def run_gui():
                 x[fdir] = (x[fdir] + 40) % (cols * 40)
                 if x[fdir] == 0:
                     y[fdir] += 40
-
-    sandbox_mons = []
-    sandbox_mons.append(pg.sprite.LayeredUpdates())
-    sb_tab = 0
 
     bgs = pg.sprite.LayeredUpdates()
     bg_sel = None
@@ -188,69 +184,21 @@ def run_gui():
                     stages = list(STAGE_ORDER.keys())
                     stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
                 elif event.key == K_d:
-                    sb_tab = (sb_tab + 1) % len(sandbox_mons)
+                    sb_tab = (sb_tab + 1) % len(sandbox.mons)
                 elif event.key == K_a:
-                    sb_tab = (sb_tab - 1) % len(sandbox_mons)
+                    sb_tab = (sb_tab - 1) % len(sandbox.mons)
                 elif event.key == K_o:
-                    save(sandbox_mons)
+                    save(sandbox.mons)
             elif event.type == QUIT:
                 running = False
                 
-            #Drag and Drop
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    selected_mon_names = [mon.name for mon in sandbox_mons[sb_tab]]
+                    selected_mon_names = sandbox.get_all_mon_names()
                     for mon in mons[stage_sel]:
                         if mon.rect.collidepoint(event.pos) and mon.name not in selected_mon_names:
-                            sandbox_mons[sb_tab].add(
+                            sandbox.add_mon(
                                 Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
-                    for mon in sandbox_mons[sb_tab]:
-                        if mon.rect.collidepoint(event.pos):
-                            mon.set_border((50,255,0))
-                            mon.dragging = True
-                            mouse_x, mouse_y = event.pos
-                            offset_x = mon.rect.x - mouse_x
-                            offset_y = mon.rect.y - mouse_y
-                elif event.button == 2:
-                    for mon in sandbox_mons[sb_tab]:
-                        if mon.rect.collidepoint(event.pos):
-                            if mon == mon_sel:
-                                mon_sel = None
-                            sandbox_mons[sb_tab].remove(mon)
-                elif event.button == 3:
-                    for mon in sandbox_mons[sb_tab]:
-                        if mon.rect.collidepoint(event.pos):
-                            if mon_sel == None:
-                                mon_sel = mon
-                                break
-                            elif mon in mon_sel.evos:
-                                mon_sel.evos.remove(mon)
-                            elif mon_sel in mon.evos:
-                                mon.evos.remove(mon_sel)
-                            else:
-                                if mon.stage != mon_sel.stage:
-                                    if STAGE_ORDER[mon_sel.stage] < STAGE_ORDER[mon.stage]:
-                                        mon_sel.evos.append(mon)
-                                    else:
-                                        mon.evos.append(mon_sel)
-                            mon_sel = None
-            elif event.type == pg.MOUSEBUTTONUP:
-                if event.button == 1:
-                    for mon in sandbox_mons[sb_tab]:
-                        mon.dragging = False
-                        if not mon.rect.colliderect(sandbox.rect):
-                            sandbox_mons[sb_tab].remove(mon)
-            elif event.type == pg.MOUSEMOTION:
-                for mon in sandbox_mons[sb_tab]:
-                    if mon.dragging:
-                        if not mon.rect.colliderect(sandbox.rect):
-                            if mon.surf.get_alpha() != 125:
-                                mon.surf.set_alpha(125)
-                        elif mon.surf.get_alpha() == 125:
-                            mon.surf.set_alpha(255)
-                        mouse_x, mouse_y = event.pos
-                        mon.rect.x = mouse_x + offset_x
-                        mon.rect.y = mouse_y + offset_y
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if mon_pane.rect.collidepoint(mouse_pos):
@@ -267,15 +215,15 @@ def run_gui():
                 mon_indicator = mon_font.render(mon.name,False,FG_ORANGE,(25,25,25))
             elif mon.border_color != (200,200,200):
                 mon.set_border((200,200,200))
-        for mon in sandbox_mons[sb_tab]:
+        for mon in sandbox.get_mons():
             if mon.rect.collidepoint(mouse_pos) and moused_over != mon.name:
                 mon.set_border(FG_WHITE)
                 moused_over = mon.name
                 mon_indicator = mon_font.render(mon.name,False,FG_ORANGE,(25,25,25))
             elif mon.border_color != (200,200,200):
                 mon.set_border((200,200,200))
-        if mon_sel:
-            mon_sel.set_border((255,135,0))
+        if sandbox.mon_sel:
+            sandbox.mon_sel.set_border((255,135,0))
 
         #Draw
         screen.fill(SCREEN_BG)
@@ -283,6 +231,8 @@ def run_gui():
         for pane in panes:
             pane.update()
             screen.blit(pane.surf,pane.rect)
+        sandbox.update(event_list)
+        sandbox.draw(screen)
         
         mon_pane.surf.fill(PANE_BG_DARK)
         mon_pane_btn.surf = mon_font.render(stage_sel,False,FG_ORANGE,PANE_BG_LITE)
@@ -297,11 +247,11 @@ def run_gui():
             mon_pane.surf.blit(mon.surf,(mon.rect.x-mon_pane.rect.left, mon.rect.y-mon_pane.rect.top, 
                                          mon.rect.w, mon.rect.h))
 
-        for mon in sandbox_mons[sb_tab]:
+        for mon in sandbox.get_mons():
             for evo in mon.evos:
-                if evo in sandbox_mons[sb_tab]:
+                if evo in sandbox.get_mons():
                     pg.draw.line(screen,FG_WHITE,mon.rect.center,evo.rect.center)
-        for mon in sandbox_mons[sb_tab]:
+        for mon in sandbox.get_mons():
             mon.update()
             screen.blit(mon.surf,mon.rect)
 
