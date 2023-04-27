@@ -9,15 +9,10 @@ from config import *
 from PIL import Image
 import os
 import re
-import pickle
 
 from Monster import Monster
 from Dropdown import Dropdown
 from Sandbox import Sandbox
-
-def save(mons):
-    with open('save.pkl','wb') as outp:
-        pickle.dump(mons,outp,pickle.HIGHEST_PROTOCOL)
 
 def run_gui():
 
@@ -180,10 +175,6 @@ def run_gui():
                 elif event.key == K_s:
                     stages = list(STAGE_ORDER.keys())
                     stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
-                elif event.key == K_d:
-                    sandbox.change_tab(1)
-                elif event.key == K_a:
-                    sandbox.change_tab(-1)
             elif event.type == QUIT:
                 running = False
                 
@@ -211,15 +202,6 @@ def run_gui():
                 mon_indicator = mon_font.render(mon.name,False,FG_ORANGE,(25,25,25))
             elif mon.border_color != (200,200,200):
                 mon.set_border((200,200,200))
-        for mon in sandbox.get_mons():
-            if mon.rect.collidepoint(mouse_pos) and moused_over != mon.name:
-                mon.set_border(FG_WHITE)
-                moused_over = mon.name
-                mon_indicator = mon_font.render(mon.name,False,FG_ORANGE,(25,25,25))
-            elif mon.border_color != (200,200,200):
-                mon.set_border((200,200,200))
-        if sandbox.mon_sel:
-            sandbox.mon_sel.set_border((255,135,0))
 
         #Draw
         screen.fill(SCREEN_BG)

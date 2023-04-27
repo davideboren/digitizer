@@ -15,10 +15,13 @@ class Sandbox(pg.sprite.Sprite):
         self.tab = 0
         self.mons = []
         self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
 
         self.mon_sel = None
+        self.moused_over_mon = None
+        self.font = pg.font.Font('grand9k.ttf',14)
 
-        #Pane background
+        #Draw grid
         pg.draw.rect(self.surf, (20,20,30), 
                     (0,0,self.rect.w, self.rect.h), border_radius = 4)
         for l in range(0, self.rect.w, 50): #Gridlines
@@ -49,16 +52,19 @@ class Sandbox(pg.sprite.Sprite):
                 names.append(mon.name)
         return names
     
+    def add_tab(self):
+        self.mons.append(pg.sprite.LayeredUpdates())
     def change_tab(self, dir):
         self.tab = (self.tab + dir) % len(self.mons)
     
     def update(self, event_list):
+
         for event in event_list:
             if event.type == KEYDOWN:
                 if event.key == K_d:
-                    self.tab = (self.tab + 1) % len(self.mons)
+                    self.change_tab(1)
                 elif event.key == K_a:
-                    self.tab = (self.tab - 1) % len(self.mons)
+                    self.change_tab(-1)
                 
             #Drag and Drop
             elif event.type == pg.MOUSEBUTTONDOWN:
@@ -67,6 +73,7 @@ class Sandbox(pg.sprite.Sprite):
                         if mon.rect.collidepoint(event.pos):
                             mon.set_border((50,255,0))
                             mon.dragging = True
+                            self.mons[self.tab].move_to_front(mon)
                             mouse_x, mouse_y = event.pos
                             self.offset_x = mon.rect.x - mouse_x
                             self.offset_y = mon.rect.y - mouse_y
@@ -88,7 +95,8 @@ class Sandbox(pg.sprite.Sprite):
                                 mon.evos.remove(self.mon_sel)
                             else:
                                 if mon.stage != self.mon_sel.stage:
-                                    if STAGE_ORDER[self.mon_sel.stage] < STAGE_ORDER[mon.stage]:
+                                    if (STAGE_ORDER[self.mon_sel.stage] 
+                                        < STAGE_ORDER[mon.stage]):
                                         self.mon_sel.evos.append(mon)
                                     else:
                                         mon.evos.append(self.mon_sel)
@@ -110,17 +118,40 @@ class Sandbox(pg.sprite.Sprite):
                         mouse_x, mouse_y = event.pos
                         mon.rect.x = mouse_x + self.offset_x
                         mon.rect.y = mouse_y + self.offset_y
+        
+        self.moused_over_mon = None
+        for mon in self.get_mons():
+            mpos = pg.mouse.get_pos()
+            collide = mon.rect.collidepoint(mpos)
+            if collide and mon != self.moused_over_mon:
+                mon.set_border(FG_WHITE)
+                self.moused_over_mon = mon
+                self.nameplate = self.font.render(mon.name, False,
+                                                  FG_ORANGE,(25,25,25))
+            elif mon.border_color != ((200,200,200)):
+                mon.set_border((200,200,200))
+        if self.mon_sel:
+            self.mon_sel.set_border((255,135,0))
 
     def draw(self, surf):
         surf.blit(self.surf, self.rect)
-        
+
         mons = self.get_mons()
+        #Link Lines
         for mon in mons:
             for evo in mon.evos:
                 if evo in mons:
-                    pg.draw.line(surf,FG_WHITE,mon.rect.center,evo.rect.center)
+                    pg.draw.line(surf, FG_WHITE,mon.rect.center, 
+                                 evo.rect.center)
+        #Monsters
         for mon in mons:
             mon.update()
-            surf.blit(mon.surf,mon.rect)
+            surf.blit(mon.surf, mon.rect)
 
-        
+        #Tab Indicator
+        tab_indicator = self.font.render(str(self.tab), False, 
+                                         (200,200,10), (20,20,30))
+        surf.blit(tab_indicator, (self.rect.x+8, self.rect.y+2))
+        mpos = pg.mouse.get_pos()
+        if self.moused_over_mon:
+            surf.blit(self.nameplate, (mpos[0]+12, mpos[1]-12))
