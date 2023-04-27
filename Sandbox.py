@@ -1,6 +1,8 @@
 import pygame as pg
-from config import *
+import pickle
 
+from config import *
+from Monster import Monster 
 
 class Sandbox(pg.sprite.Sprite):
 
@@ -49,14 +51,30 @@ class Sandbox(pg.sprite.Sprite):
         names = []
         for tab in self.mons:
             for mon in tab:
-                names.append(mon.name)
+                names.append(mon.data.name)
         return names
     
     def add_tab(self):
         self.mons.append(pg.sprite.LayeredUpdates())
+
     def change_tab(self, dir):
         self.tab = (self.tab + dir) % len(self.mons)
     
+    def save(self):
+        out = []
+        for tab in self.mons:
+            for mon in tab:
+                out.append(mon.data)
+        with open('save.pkl','wb') as file:
+            pickle.dump(out,file)
+
+    def load(self):
+        with open('save.pkl','rb') as file:
+            mon_data = pickle.load(file)
+            for data in mon_data:
+                new_mon = Monster(data.filepath,(450,300))
+                self.add_mon(new_mon)
+
     def update(self, event_list):
 
         for event in event_list:
@@ -65,6 +83,10 @@ class Sandbox(pg.sprite.Sprite):
                     self.change_tab(1)
                 elif event.key == K_a:
                     self.change_tab(-1)
+                elif event.key == K_o:
+                    self.save()
+                elif event.key == K_l:
+                    self.load()
                 
             #Drag and Drop
             elif event.type == pg.MOUSEBUTTONDOWN:
@@ -89,17 +111,17 @@ class Sandbox(pg.sprite.Sprite):
                             if self.mon_sel == None:
                                 self.mon_sel = mon
                                 break
-                            elif mon in self.mon_sel.evos:
-                                self.mon_sel.evos.remove(mon)
-                            elif self.mon_sel in mon.evos:
-                                mon.evos.remove(self.mon_sel)
+                            elif mon in self.mon_sel.data.evos:
+                                self.mon_sel.data.evos.remove(mon)
+                            elif self.mon_sel in mon.data.evos:
+                                mon.data.evos.remove(self.mon_sel)
                             else:
-                                if mon.stage != self.mon_sel.stage:
-                                    if (STAGE_ORDER[self.mon_sel.stage] 
-                                        < STAGE_ORDER[mon.stage]):
-                                        self.mon_sel.evos.append(mon)
+                                if mon.data.stage != self.mon_sel.data.stage:
+                                    if (STAGE_ORDER[self.mon_sel.data.stage] 
+                                        < STAGE_ORDER[mon.data.stage]):
+                                        self.mon_sel.data.evos.append(mon)
                                     else:
-                                        mon.evos.append(self.mon_sel)
+                                        mon.data.evos.append(self.mon_sel)
                             self.mon_sel = None
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -126,7 +148,7 @@ class Sandbox(pg.sprite.Sprite):
             if collide and mon != self.moused_over_mon:
                 mon.set_border(FG_WHITE)
                 self.moused_over_mon = mon
-                self.nameplate = self.font.render(mon.name, False,
+                self.nameplate = self.font.render(mon.data.name, False,
                                                   FG_ORANGE,(25,25,25))
             elif mon.border_color != ((200,200,200)):
                 mon.set_border((200,200,200))
@@ -139,7 +161,7 @@ class Sandbox(pg.sprite.Sprite):
         mons = self.get_mons()
         #Link Lines
         for mon in mons:
-            for evo in mon.evos:
+            for evo in mon.data.evos:
                 if evo in mons:
                     pg.draw.line(surf, FG_WHITE,mon.rect.center, 
                                  evo.rect.center)

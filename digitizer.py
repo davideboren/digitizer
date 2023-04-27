@@ -183,9 +183,9 @@ def run_gui():
                     sandbox_mons = sandbox.get_all_mon_names()
                     for mon in mons[stage_sel]:
                         if (mon.rect.collidepoint(event.pos) 
-                            and mon.name not in sandbox_mons):
+                            and mon.data.name not in sandbox_mons):
                             sandbox.add_mon(
-                                Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
+                                Monster(mon.data.filepath,(mon.rect.x,mon.rect.y)))
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if mon_pane.rect.collidepoint(mouse_pos):
@@ -196,10 +196,10 @@ def run_gui():
         mouse_pos = pg.mouse.get_pos()
         moused_over = ""
         for mon in mons[stage_sel]:
-            if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(mon_pane.rect) and moused_over != mon.name:
+            if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(mon_pane.rect) and moused_over != mon.data.name:
                 mon.set_border(FG_WHITE)
-                moused_over = mon.name
-                mon_indicator = mon_font.render(mon.name,False,FG_ORANGE,(25,25,25))
+                moused_over = mon.data.name
+                mon_indicator = mon_font.render(mon.data.name,False,FG_ORANGE,(25,25,25))
             elif mon.border_color != (200,200,200):
                 mon.set_border((200,200,200))
 
