@@ -10,7 +10,7 @@ from PIL import Image
 import os
 import re
 
-from Monster import Monster
+from Monster import Monster, MonsterData
 from Dropdown import Dropdown
 from Sandbox import Sandbox
 
@@ -105,9 +105,19 @@ def run_gui():
                                 (SCREEN_W/2 - load_msg.get_width()/2,
                                  SCREEN_H/2 - load_msg.get_height()/2))
                     pg.display.flip()
-                mons[fdir].add(Monster(filename,
-                                        (mon_pane.rect[0] + PAD + x[fdir] , 
-                                        mon_pane.rect[1] + PAD + y[fdir])))
+
+                data = MonsterData(
+                    filename,
+                    filename.split('/')[-1].split('.')[0],
+                    filename.split('/')[-2],
+                    "walk",
+                    "",
+                    [],
+                    0,
+                    (mon_pane.rect[0] + PAD + x[fdir],
+                     mon_pane.rect[1] + PAD + y[fdir])
+                )
+                mons[fdir].add(Monster(data))
                 x[fdir] = (x[fdir] + 40) % (cols * 40)
                 if x[fdir] == 0:
                     y[fdir] += 40
@@ -184,8 +194,7 @@ def run_gui():
                     for mon in mons[stage_sel]:
                         if (mon.rect.collidepoint(event.pos) 
                             and mon.data.name not in sandbox_mons):
-                            sandbox.add_mon(
-                                Monster(mon.data.filepath,(mon.rect.x,mon.rect.y)))
+                            sandbox.add_mon(Monster(mon.data))
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if mon_pane.rect.collidepoint(mouse_pos):

@@ -72,8 +72,7 @@ class Sandbox(pg.sprite.Sprite):
         with open('save.pkl','rb') as file:
             mon_data = pickle.load(file)
             for data in mon_data:
-                new_mon = Monster(data.filepath,(450,300))
-                self.add_mon(new_mon)
+                self.add_mon(Monster(data))
 
     def update(self, event_list):
 
@@ -111,17 +110,17 @@ class Sandbox(pg.sprite.Sprite):
                             if self.mon_sel == None:
                                 self.mon_sel = mon
                                 break
-                            elif mon in self.mon_sel.data.evos:
-                                self.mon_sel.data.evos.remove(mon)
-                            elif self.mon_sel in mon.data.evos:
-                                mon.data.evos.remove(self.mon_sel)
+                            elif mon in self.mon_sel.evos:
+                                self.mon_sel.remove_evo(mon)
+                            elif self.mon_sel in mon.evos:
+                                mon.remove_evo(self.mon_sel)
                             else:
                                 if mon.data.stage != self.mon_sel.data.stage:
                                     if (STAGE_ORDER[self.mon_sel.data.stage] 
                                         < STAGE_ORDER[mon.data.stage]):
-                                        self.mon_sel.data.evos.append(mon)
+                                        self.mon_sel.add_evo(mon)
                                     else:
-                                        mon.data.evos.append(self.mon_sel)
+                                        mon.add_evo(self.mon_sel)
                             self.mon_sel = None
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
@@ -140,6 +139,7 @@ class Sandbox(pg.sprite.Sprite):
                         mouse_x, mouse_y = event.pos
                         mon.rect.x = mouse_x + self.offset_x
                         mon.rect.y = mouse_y + self.offset_y
+                        mon.data.coords = (mon.rect.x, mon.rect.y)
         
         self.moused_over_mon = None
         for mon in self.get_mons():
@@ -161,7 +161,7 @@ class Sandbox(pg.sprite.Sprite):
         mons = self.get_mons()
         #Link Lines
         for mon in mons:
-            for evo in mon.data.evos:
+            for evo in mon.evos:
                 if evo in mons:
                     pg.draw.line(surf, FG_WHITE,mon.rect.center, 
                                  evo.rect.center)

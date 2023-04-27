@@ -17,21 +17,13 @@ class MonsterData:
     coords: int
 
 class Monster(pg.sprite.Sprite):
-    def __init__(self, filepath, coords):
+    def __init__(self, data):
     
         super(Monster,self).__init__()
 
-        # Saveable data
-        self.data = MonsterData(
-            filepath,
-            filepath.split('/')[-1].split('.')[0],
-            filepath.split('/')[-2],
-            "walk",
-            "",
-            [],
-            0,
-            coords
-        )
+        self.data = data
+
+        self.evos = []
         
         self.border_color = (200,200,200)
         self.spritesheet_coords = (0,0)
@@ -48,6 +40,14 @@ class Monster(pg.sprite.Sprite):
         
         self.rect.move_ip(self.data.coords)
         self.dragging = False
+
+    def add_evo(self, mon):
+        self.data.evos.append(mon.data.name)
+        self.evos.append(mon)
+    
+    def remove_evo(self,mon):
+        self.data.evos.remove(mon.data.name)
+        self.evos.remove(mon)
 
     def set_border(self,color):
         self.border_color = color
