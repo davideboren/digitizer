@@ -49,6 +49,9 @@ class Sandbox(pg.sprite.Sprite):
                 names.append(mon.name)
         return names
     
+    def change_tab(self, dir):
+        self.tab = (self.tab + dir) % len(self.mons)
+    
     def update(self, event_list):
         for event in event_list:
             if event.type == KEYDOWN:
@@ -110,3 +113,14 @@ class Sandbox(pg.sprite.Sprite):
 
     def draw(self, surf):
         surf.blit(self.surf, self.rect)
+        
+        mons = self.get_mons()
+        for mon in mons:
+            for evo in mon.evos:
+                if evo in mons:
+                    pg.draw.line(surf,FG_WHITE,mon.rect.center,evo.rect.center)
+        for mon in mons:
+            mon.update()
+            surf.blit(mon.surf,mon.rect)
+
+        

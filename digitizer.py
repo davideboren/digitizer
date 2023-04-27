@@ -84,7 +84,6 @@ def run_gui():
     panes.add(mon_pane_border)
     panes.add(mon_pane)
     panes.add(mon_pane_btn)
-    #panes.add(sandbox)
     panes.add(bg_pane)
     panes.add(preview_pane)
     
@@ -160,8 +159,6 @@ def run_gui():
     moused_over = "" 
     mon_indicator = mon_font.render(moused_over,False,FG_ORANGE,(25,25,25))
 
-    mon_sel = None
-
     while running:
         
         clock.tick(60)
@@ -184,19 +181,18 @@ def run_gui():
                     stages = list(STAGE_ORDER.keys())
                     stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
                 elif event.key == K_d:
-                    sb_tab = (sb_tab + 1) % len(sandbox.mons)
+                    sandbox.change_tab(1)
                 elif event.key == K_a:
-                    sb_tab = (sb_tab - 1) % len(sandbox.mons)
-                elif event.key == K_o:
-                    save(sandbox.mons)
+                    sandbox.change_tab(-1)
             elif event.type == QUIT:
                 running = False
                 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    selected_mon_names = sandbox.get_all_mon_names()
+                    sandbox_mons = sandbox.get_all_mon_names()
                     for mon in mons[stage_sel]:
-                        if mon.rect.collidepoint(event.pos) and mon.name not in selected_mon_names:
+                        if (mon.rect.collidepoint(event.pos) 
+                            and mon.name not in sandbox_mons):
                             sandbox.add_mon(
                                 Monster(mon.filepath,(mon.rect.x,mon.rect.y)))
             elif event.type == pg.MOUSEWHEEL:
@@ -231,6 +227,7 @@ def run_gui():
         for pane in panes:
             pane.update()
             screen.blit(pane.surf,pane.rect)
+
         sandbox.update(event_list)
         sandbox.draw(screen)
         
@@ -246,14 +243,6 @@ def run_gui():
             mon.update()
             mon_pane.surf.blit(mon.surf,(mon.rect.x-mon_pane.rect.left, mon.rect.y-mon_pane.rect.top, 
                                          mon.rect.w, mon.rect.h))
-
-        for mon in sandbox.get_mons():
-            for evo in mon.evos:
-                if evo in sandbox.get_mons():
-                    pg.draw.line(screen,FG_WHITE,mon.rect.center,evo.rect.center)
-        for mon in sandbox.get_mons():
-            mon.update()
-            screen.blit(mon.surf,mon.rect)
 
         for i in info:
             i.update()
