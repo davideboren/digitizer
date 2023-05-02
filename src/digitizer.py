@@ -201,6 +201,7 @@ def run_gui():
                     mon_pane.surf.scroll(0,event.y*25)
                     for mon in mons[stage_sel]:
                         mon.rect.y += 25*event.y
+                        mon.data.coords = mon.rect.topleft
 
         mouse_pos = pg.mouse.get_pos()
         moused_over = ""

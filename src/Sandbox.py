@@ -189,6 +189,8 @@ class Sandbox(pg.sprite.Sprite):
         tab_indicator = self.font.render(str(self.tab), False, 
                                          (200,200,10), (20,20,30))
         surf.blit(tab_indicator, (self.rect.x+8, self.rect.y+2))
+
+        #Mon Indicator
         mpos = pg.mouse.get_pos()
         if self.moused_over_mon:
             surf.blit(self.nameplate, (mpos[0]+12, mpos[1]-12))
