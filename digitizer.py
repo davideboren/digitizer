@@ -4,15 +4,16 @@
 #
 
 import pygame as pg
-from config import *
-
 from PIL import Image
 import os
 import re
+import dataclasses
 
 from Monster import Monster, MonsterData
 from Dropdown import Dropdown
 from Sandbox import Sandbox
+from config import *
+
 
 def run_gui():
 
@@ -113,7 +114,7 @@ def run_gui():
                     "walk",
                     "",
                     [],
-                    0,
+                    -1,
                     (mon_pane.rect[0] + PAD + x[fdir],
                      mon_pane.rect[1] + PAD + y[fdir])
                 )
@@ -190,11 +191,10 @@ def run_gui():
                 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    sandbox_mons = sandbox.get_all_mon_names()
                     for mon in mons[stage_sel]:
-                        if (mon.rect.collidepoint(event.pos) 
-                            and mon.data.name not in sandbox_mons):
-                            sandbox.add_mon(Monster(mon.data))
+                        if mon.rect.collidepoint(event.pos):
+                            data_copy = dataclasses.replace(mon.data)
+                            sandbox.add_mon(Monster(data_copy))
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if mon_pane.rect.collidepoint(mouse_pos):

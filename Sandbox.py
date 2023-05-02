@@ -37,7 +37,11 @@ class Sandbox(pg.sprite.Sprite):
                     border_radius=4, width = 2)
         
     def add_mon(self, mon):
-        self.mons[self.tab].add(mon)
+        if mon.data.tab == -1:
+            mon.data.tab = self.tab
+        cur_mon_names = self.get_mon_names(mon.data.tab)
+        if mon.data.name not in cur_mon_names:
+            self.mons[mon.data.tab].add(mon)
 
     def remove_mon(self, mon):
         self.mons[self.tab].remove(mon)
@@ -47,10 +51,14 @@ class Sandbox(pg.sprite.Sprite):
             tab = self.tab
         return self.mons[tab]
 
-    def get_all_mon_names(self):
+    def get_mon_names(self, tab = -1):
         names = []
-        for tab in self.mons:
-            for mon in tab:
+        if tab == -1:
+            for tab in self.mons:
+                for mon in tab:
+                    names.append(mon.data.name)
+        else:
+            for mon in self.mons[tab]:
                 names.append(mon.data.name)
         return names
     
@@ -69,13 +77,19 @@ class Sandbox(pg.sprite.Sprite):
             pickle.dump(out,file)
 
     def load(self):
+        evos = {}
         with open('save.pkl','rb') as file:
             mon_data = pickle.load(file)
             for data in mon_data:
-                self.add_mon(Monster(data))
+                mon = Monster(data)
+                evos[data.name] = mon
+                self.add_mon(mon)
+        for tab in self.mons:
+           for mon in tab:
+               for evo_name in mon.data.evos:
+                   mon.evos.append(evos[evo_name])
 
     def update(self, event_list):
-
         for event in event_list:
             if event.type == KEYDOWN:
                 if event.key == K_d:
@@ -163,7 +177,8 @@ class Sandbox(pg.sprite.Sprite):
         for mon in mons:
             for evo in mon.evos:
                 if evo in mons:
-                    pg.draw.line(surf, FG_WHITE,mon.rect.center, 
+                    pg.draw.line(surf, FG_WHITE, 
+                                 mon.rect.center, 
                                  evo.rect.center)
         #Monsters
         for mon in mons:
