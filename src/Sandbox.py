@@ -20,6 +20,7 @@ class Sandbox(pg.sprite.Sprite):
         self.mons.append(pg.sprite.LayeredUpdates())
 
         self.mon_sel = None
+        self.preview_mon = None
         self.moused_over_mon = None
         self.font = pg.font.Font('grand9k.ttf',14)
 
@@ -105,40 +106,45 @@ class Sandbox(pg.sprite.Sprite):
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for mon in self.get_mons():
-                        if mon.rect.collidepoint(event.pos):
-                            mon.set_border((50,255,0))
-                            mon.dragging = True
-                            self.mons[self.tab].move_to_front(mon)
-                            mouse_x, mouse_y = event.pos
-                            self.offset_x = mon.rect.x - mouse_x
-                            self.offset_y = mon.rect.y - mouse_y
+                        if not mon.rect.collidepoint(event.pos):
+                            continue
+                        mon.set_border((50,255,0))
+                        mon.dragging = True
+                        self.mons[self.tab].move_to_front(mon)
+                        mouse_x, mouse_y = event.pos
+                        self.offset_x = mon.rect.x - mouse_x
+                        self.offset_y = mon.rect.y - mouse_y
+                        if mon != self.preview_mon:
+                            self.preview_mon = mon
                             pg.event.post(
                                 pg.event.Event(MON_SELECT,
-                                               {"filepath":mon.data.filepath}))
+                                                {"filepath":mon.data.filepath}))
                 elif event.button == 2:
                     for mon in self.get_mons():
-                        if mon.rect.collidepoint(event.pos):
-                            if mon == self.mon_sel:
-                                self.mon_sel = None
-                            self.remove_mon(mon)
+                        if not mon.rect.collidepoint(event.pos):
+                            continue
+                        if mon == self.mon_sel:
+                            self.mon_sel = None
+                        self.remove_mon(mon)
                 elif event.button == 3:
                     for mon in self.get_mons():
-                        if mon.rect.collidepoint(event.pos):
-                            if self.mon_sel == None:
-                                self.mon_sel = mon
-                                break
-                            elif mon in self.mon_sel.evos:
-                                self.mon_sel.remove_evo(mon)
-                            elif self.mon_sel in mon.evos:
-                                mon.remove_evo(self.mon_sel)
-                            else:
-                                if mon.data.stage != self.mon_sel.data.stage:
-                                    if (STAGE_ORDER[self.mon_sel.data.stage] 
-                                        < STAGE_ORDER[mon.data.stage]):
-                                        self.mon_sel.add_evo(mon)
-                                    else:
-                                        mon.add_evo(self.mon_sel)
-                            self.mon_sel = None
+                        if not mon.rect.collidepoint(event.pos):
+                            continue
+                        if self.mon_sel == None:
+                            self.mon_sel = mon
+                            break
+                        elif mon in self.mon_sel.evos:
+                            self.mon_sel.remove_evo(mon)
+                        elif self.mon_sel in mon.evos:
+                            mon.remove_evo(self.mon_sel)
+                        else:
+                            if mon.data.stage != self.mon_sel.data.stage:
+                                if (STAGE_ORDER[self.mon_sel.data.stage] 
+                                    < STAGE_ORDER[mon.data.stage]):
+                                    self.mon_sel.add_evo(mon)
+                                else:
+                                    mon.add_evo(self.mon_sel)
+                        self.mon_sel = None
             elif event.type == pg.MOUSEBUTTONUP:
                 if event.button == 1:
                     for mon in self.get_mons():

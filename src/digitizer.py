@@ -50,7 +50,7 @@ def run_gui():
     mon_pane.rect = mon_pane.surf.get_rect().move(16 + 2, 24 + 24 + PAD)
     
     mon_pane_btn = pg.sprite.Sprite()
-    mon_pane_btn.surf = mon_font.render("Stage",False,FG_ORANGE,PANE_BG_LITE)
+    mon_pane_btn.surf = mon_font.render("Stage", False, FG_ORANGE,PANE_BG_LITE)
     mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(
         mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
     
@@ -68,7 +68,6 @@ def run_gui():
                  border_radius=4, width = 2)
 
     preview_pane = Preview()
-    preview_pane.set_mon("sprites/adult/Tyrannomon.png")
     
     panes.add(mon_pane_border)
     panes.add(mon_pane)
