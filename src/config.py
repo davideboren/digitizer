@@ -1,3 +1,4 @@
+import pygame as pg
 from pygame.locals import (
     K_ESCAPE,
     K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,
@@ -47,3 +48,5 @@ STAGE_KEYS = {
     K_7 : "ultimate",
     K_0 : "armor",
 }
+
+MON_SELECT = pg.USEREVENT + 1

@@ -112,6 +112,9 @@ class Sandbox(pg.sprite.Sprite):
                             mouse_x, mouse_y = event.pos
                             self.offset_x = mon.rect.x - mouse_x
                             self.offset_y = mon.rect.y - mouse_y
+                            pg.event.post(
+                                pg.event.Event(MON_SELECT,
+                                               {"filepath":mon.data.filepath}))
                 elif event.button == 2:
                     for mon in self.get_mons():
                         if mon.rect.collidepoint(event.pos):

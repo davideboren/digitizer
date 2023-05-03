@@ -12,6 +12,7 @@ import dataclasses
 from Monster import Monster, MonsterData
 from Dropdown import Dropdown
 from Sandbox import Sandbox
+from Preview import Preview
 from config import *
 
 
@@ -66,17 +67,9 @@ def run_gui():
                  (0,0,bg_pane.rect.w, bg_pane.rect.h), 
                  border_radius=4, width = 2)
 
-    preview_pane = pg.sprite.Sprite()
-    preview_pane.surf = pg.Surface((PREVIEW_PANE_W,PREVIEW_PANE_H))
-    preview_pane.rect = preview_pane.surf.get_rect().move(
-        sandbox.rect.right + PAD, SCREEN_H - PAD - 200)
-    pg.draw.rect(preview_pane.surf, PANE_BG_DARK,
-                 (0,0,preview_pane.rect.w, preview_pane.rect.h), 
-                 border_radius=4)
-    pg.draw.rect(preview_pane.surf, FG_WHITE,
-                 (0,0,preview_pane.rect.w, preview_pane.rect.h), 
-                 border_radius=4, width = 2)
-
+    preview_pane = Preview()
+    preview_pane.set_mon("sprites/adult/Tyrannomon.png")
+    
     panes.add(mon_pane_border)
     panes.add(mon_pane)
     panes.add(mon_pane_btn)
@@ -140,6 +133,8 @@ def run_gui():
                 bgs.add(bg)
                 bg_sel = bg
 
+    preview_pane.set_bg(bg_sel)
+
     #Info 
     info = pg.sprite.LayeredUpdates()
 
@@ -202,6 +197,8 @@ def run_gui():
                     for mon in mons[stage_sel]:
                         mon.rect.y += 25*event.y
                         mon.data.coords = mon.rect.topleft
+            elif event.type == MON_SELECT:
+                preview_pane.set_mon(event.filepath)
 
         mouse_pos = pg.mouse.get_pos()
         moused_over = ""
@@ -219,6 +216,8 @@ def run_gui():
         for pane in panes:
             pane.update()
             screen.blit(pane.surf,pane.rect)
+        
+        preview_pane.draw(screen)
 
         sandbox.update(event_list)
         sandbox.draw(screen)
@@ -228,8 +227,6 @@ def run_gui():
 
         for bg in bgs:
             bg_pane.surf.blit(bg.surf,bg.rect)
-
-        preview_pane.surf.blit(bg_sel.surf,(PREVIEW_PANE_W/2 - bg_sel.rect.w/2,PREVIEW_PANE_H/2 - bg_sel.rect.h/2))
 
         for mon in mons[stage_sel]:
             mon.update()
