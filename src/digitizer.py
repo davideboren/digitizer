@@ -15,7 +15,6 @@ from Sandbox import Sandbox
 from Preview import Preview
 from config import *
 
-
 def run_gui():
 
     pg.init()
@@ -146,12 +145,6 @@ def run_gui():
                  (SCREEN_W,menu_bar.rect[3] - 2),
                  width = 2)
 
-    menu_bar_file = Dropdown(
-    [PANE_BG_DARK, PANE_BG_LITE],
-    [PANE_BG_DARK, PANE_BG_LITE],
-    0, 0, 40, 22, 
-    "File", ["New", "Open", "Exit"])
-
     info.add(menu_bar)
 
     stage_sel = list(STAGE_ORDER.keys())[0]
@@ -164,8 +157,6 @@ def run_gui():
         clock.tick(60)
 
         event_list = pg.event.get()
-
-        menu_bar_file.update(event_list)
         
         for event in event_list:
 
@@ -238,7 +229,6 @@ def run_gui():
         if moused_over:
             screen.blit(mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))
 
-        menu_bar_file.draw(screen)
         pg.display.flip()
 
 def convert_sprites():

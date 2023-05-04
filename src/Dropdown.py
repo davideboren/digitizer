@@ -27,7 +27,7 @@ class Dropdown():
                 rect.y += (i+1) * self.rect.height
                 pg.draw.rect(surf, self.color_option[1 if i == self.active_option else 0], rect, 0)
                 msg = self.font.render(text,False,FG_WHITE)
-                surf.blit(msg, msg.get_rect(center = rect.center))
+                surf.blit(msg, msg.get_rect(left = rect.left, top = rect.top))
 
     def update(self, event_list):
         mpos = pg.mouse.get_pos()
