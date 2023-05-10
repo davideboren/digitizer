@@ -103,6 +103,7 @@ def run_gui():
                     filename.split('/')[-1].split('.')[0],
                     filename.split('/')[-2],
                     "walk",
+                    2,
                     "",
                     [],
                     -1,

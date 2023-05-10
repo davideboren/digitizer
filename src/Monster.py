@@ -10,6 +10,7 @@ class MonsterData:
     name: str
     stage: str
     move_style: str
+    speed: int
     bg: str
     evos: list[str]
 

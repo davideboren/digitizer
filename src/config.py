@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.locals import (
     K_ESCAPE,
     K_0,K_1,K_2,K_3,K_4,K_5,K_6,K_7,
-    K_w,K_a,K_s,K_d,K_o,K_l,
+    K_w,K_a,K_e,K_s,K_d,K_o,K_l,
     KEYDOWN,
     QUIT
 )

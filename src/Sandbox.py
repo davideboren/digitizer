@@ -1,8 +1,10 @@
 import pygame as pg
 import pickle
+import dataclasses
 
 from config import *
 from Monster import Monster 
+from Monster import MonsterData
 
 class Sandbox(pg.sprite.Sprite):
 
@@ -90,6 +92,51 @@ class Sandbox(pg.sprite.Sprite):
                for evo_name in mon.data.evos:
                    mon.evos.append(evos[evo_name])
 
+    def export(self):
+        mapping = {
+            "<class 'str'>" : "String",
+            "list[str]" : "String*",
+            "<class 'int'>" : "int"
+        }
+
+        out_monster_ref_struct = ""
+        out_monster_names = ""
+        out_monster_refs = ""
+
+        #for field in dataclasses.fields(MonsterData):
+        #    out_monster_ref_struct += mapping[str(field.type)] \
+        #    + " " + field.name + ",\n"
+        out_monster_ref_struct = "String filename;"
+        out_monster_ref_struct += "\nMonsterName evos[8];"
+
+        for tab in self.mons:
+            for mon in tab:
+                out_monster_names += mon.data.name + ",\n"
+
+                evos = ""
+                for evo in mon.data.evos:
+                    evos += evo + ", "
+                evos = evos.rstrip(', ')
+                if len(evos) == 0:
+                    evos = "Agu2006_Digitama"
+
+                out_monster_refs += '{\n\t"' \
+                + mon.data.filepath.replace(".png",".bmp") + '",\n' \
+                + '\t{' + evos + '}' \
+                + '\n},\n'
+
+        out_monster_names = out_monster_names.rstrip(",\n")
+        out_monster_refs = out_monster_refs.rstrip(",\n")
+
+        with open("src/template.h") as file:
+            f = file.read()
+            f = f.replace("out_monster_names", out_monster_names)
+            f = f.replace("out_monster_refs", out_monster_refs)
+            f = f.replace("out_monster_ref_struct", out_monster_ref_struct)
+            with open("out/MonsterDefs.h", "w") as out:
+                out.write(f)
+
+
     def update(self, event_list):
         for event in event_list:
             if event.type == KEYDOWN:
@@ -101,6 +148,8 @@ class Sandbox(pg.sprite.Sprite):
                     self.save()
                 elif event.key == K_l:
                     self.load()
+                elif event.key == K_e:
+                    self.export()
                 
             #Drag and Drop
             elif event.type == pg.MOUSEBUTTONDOWN:

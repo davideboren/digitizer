@@ -4,16 +4,27 @@
 #include <Arduino.h>
 
 enum MonsterName {
-    Tyrannomon,
-    Yukimibotamon
+Empty,
+out_monster_names
+};
+
+enum MonsterStage {
+	digitama,
+    baby,
+    baby_ii,
+    child,
+    adult,
+    perfect,
+    ultimate,
+    armor
 };
 
 struct MonsterRef {
-    String filename;
+out_monster_ref_struct
 };
 
 static const MonsterRef MonsterDB[] = {
-    {"sprite/adult/Tyrannomon.bmp"},
-    {"sprite/baby/Yukimibotamon.bmp"},
+{"null", {Kera_Digitama}},
+out_monster_refs
 };
 #endif //_MONSTER_DEFS_H_
