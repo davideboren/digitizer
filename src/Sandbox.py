@@ -3,6 +3,7 @@ import pickle
 
 from config import *
 from Monster import Monster 
+from MonsterData import MonsterData
 
 class Sandbox(pg.sprite.Sprite):
 
@@ -98,13 +99,25 @@ class Sandbox(pg.sprite.Sprite):
         String filepath;\n\
         MonsterName name;\n\
         MonsterStage stage;\n\
+        int lifespan;\n\
         String move_style;\n\
         int speed;\n\
         String bg;\n\
         MonsterName evos[8];"
 
+        rand_egg_data = MonsterData(
+            name = "RandomEgg",
+            lifespan = 0,
+            tab = len(self.mons) - 1,
+            coords = (-100,-100)
+        )
+        rand_egg = Monster(rand_egg_data)
+        self.add_mon(rand_egg)
+
         for tab in self.mons:
             for mon in tab:
+                if mon.data.stage == "digitama":
+                    rand_egg.data.evos.append(mon.data.name)
                 out_monster_names += mon.data.name + ",\n"
 
                 evos = ""
@@ -112,12 +125,13 @@ class Sandbox(pg.sprite.Sprite):
                     evos += evo + ", "
                 evos = evos.rstrip(', ')
                 if len(evos) == 0:
-                    evos = "Agu2006_Digitama"
+                    evos = "RandomEgg"
 
                 out_monster_refs += '{\n\t"' \
                 + mon.data.filepath.replace(".png",".bmp") + '",\n\t' \
                 + mon.data.name + ',\n\t' \
                 + mon.data.stage + ',\n\t' \
+                + str(mon.data.lifespan) + ',\n\t' \
                 + mon.data.move_style + ',\n\t' \
                 + str(mon.data.speed) + ',\n\t' \
                 + mon.data.bg + ',\n\t' \
@@ -134,6 +148,8 @@ class Sandbox(pg.sprite.Sprite):
             f = f.replace("out_monster_ref_struct", out_monster_ref_struct)
             with open("out/MonsterDefs.h", "w") as out:
                 out.write(f)
+
+        self.remove_mon(rand_egg)
 
 
     def update(self, event_list):

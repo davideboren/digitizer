@@ -1,13 +1,15 @@
 class MonsterData:
     def __init__(self, **kwargs):
         #Universal
-        self.filepath = kwargs.get('filepath', "sprites/adult/Tyrannomon.bmp")
+        self.filepath = kwargs.get('filepath', "sprites/adult/Tyrannomon.png")
         default_name = self.filepath.split('/')[-1].split('.')[0]
         self.name = kwargs.get('name', default_name)
         default_stage = self.filepath.split('/')[-2]
         self.stage = kwargs.get('stage', default_stage)
+        self.lifespan = kwargs.get('lifespan', 100)
         self.move_style = kwargs.get('move_style', '"walk"')
-        self.speed = kwargs.get('speed', 2)
+        default_speed = 0 if self.stage == "digitama" else 2
+        self.speed = kwargs.get('speed', default_speed)
         self.bg = kwargs.get('bg', '"None"')
         self.evos = kwargs.get('evos', [])
 

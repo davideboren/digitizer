@@ -1,12 +1,10 @@
 #
-# Converts Transparent .png spritesheets to 24-bit BMPs
-# Any transparent pixels are changed to #FF00FF
+# Evolution tree builder for Tyrannomon
 #
 
 import pygame as pg
 from PIL import Image
 import os
-import re
 import dataclasses
 import copy
 
@@ -169,6 +167,8 @@ def run_gui():
                 elif event.key == K_s:
                     stages = list(STAGE_ORDER.keys())
                     stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
+                elif event.key == K_c:
+                    convert_sprites()
             elif event.type == QUIT:
                 running = False
                 
@@ -230,15 +230,16 @@ def run_gui():
         pg.display.flip()
 
 def convert_sprites():
+    if not os.path.exists("out/sprites"):
+        os.mkdir("out/sprites")
     for r, d, f in os.walk("sprites"):
         for dir in d:
-            if not os.path.exists(os.path.join("output",dir)):
-                os.mkdir(os.path.join("output",dir))
+            if not os.path.exists(os.path.join("out/sprites",dir)):
+                os.mkdir(os.path.join("out/sprites",dir))
         for file in f:
             if "png" in file:
-            
                 filepath = os.path.join(r,file)
-                output = os.path.join("output",filepath)
+                output = os.path.join("out",filepath)
                 
                 print("Converting ",filepath)
                 
@@ -253,8 +254,7 @@ def convert_sprites():
                             spr.putpixel((w,h),(255,0,255,255))
                 
                 spr = spr.convert("RGB")
-                spr.save(re.sub('png','bmp',output))
-            
+                spr.save(output.replace("png","bmp"))
 def main():
     run_gui()
 
