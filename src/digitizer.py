@@ -8,8 +8,10 @@ from PIL import Image
 import os
 import re
 import dataclasses
+import copy
 
-from Monster import Monster, MonsterData
+from Monster import Monster
+from MonsterData import MonsterData
 from Dropdown import Dropdown
 from Sandbox import Sandbox
 from Preview import Preview
@@ -99,16 +101,11 @@ def run_gui():
                     pg.display.flip()
 
                 data = MonsterData(
-                    filename,
-                    filename.split('/')[-1].split('.')[0],
-                    filename.split('/')[-2],
-                    "walk",
-                    2,
-                    "",
-                    [],
-                    -1,
-                    (mon_pane.rect[0] + PAD + x[fdir],
-                     mon_pane.rect[1] + PAD + y[fdir])
+                    filepath = filename,
+                    coords = ( 
+                     mon_pane.rect[0] + PAD + x[fdir],
+                     mon_pane.rect[1] + PAD + y[fdir]
+                     )
                 )
                 mons[fdir].add(Monster(data))
                 x[fdir] = (x[fdir] + 40) % (cols * 40)
@@ -179,7 +176,7 @@ def run_gui():
                 if event.button == 1:
                     for mon in mons[stage_sel]:
                         if mon.rect.collidepoint(event.pos):
-                            data_copy = dataclasses.replace(mon.data)
+                            data_copy = copy.deepcopy(mon.data)
                             sandbox.add_mon(Monster(data_copy))
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()

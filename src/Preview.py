@@ -1,7 +1,8 @@
 import pygame as pg
 
 from config import *
-from Monster import Monster, MonsterData
+from Monster import Monster
+from MonsterData import MonsterData
 
 class Preview(pg.sprite.Sprite):
 
@@ -26,17 +27,11 @@ class Preview(pg.sprite.Sprite):
         self.bg = bg_sprite
 
     def set_mon(self,filename):
-        data = MonsterData(
-                    filename,
-                    filename.split('/')[-1].split('.')[0],
-                    filename.split('/')[-2],
-                    "walk",
-                    "",
-                    [],
-                    -1,
-                    (self.rect.centerx - 16, self.rect.bottom - 76)
-                )
-        self.mon = Monster(data)
+        data2 = MonsterData(
+            filepath = filename,
+            coords = (self.rect.centerx - 16, self.rect.bottom - 76)
+        )
+        self.mon = Monster(data2)
         self.mon.set_border((0,0,0,0))
         self.mon.bg_color = (0,0,0,0)
         

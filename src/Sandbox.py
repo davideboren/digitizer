@@ -1,10 +1,8 @@
 import pygame as pg
 import pickle
-import dataclasses
 
 from config import *
 from Monster import Monster 
-from Monster import MonsterData
 
 class Sandbox(pg.sprite.Sprite):
 
@@ -93,19 +91,10 @@ class Sandbox(pg.sprite.Sprite):
                    mon.evos.append(evos[evo_name])
 
     def export(self):
-        mapping = {
-            "<class 'str'>" : "String",
-            "list[str]" : "String*",
-            "<class 'int'>" : "int"
-        }
-
         out_monster_ref_struct = ""
         out_monster_names = ""
         out_monster_refs = ""
 
-        #for field in dataclasses.fields(MonsterData):
-        #    out_monster_ref_struct += mapping[str(field.type)] \
-        #    + " " + field.name + ",\n"
         out_monster_ref_struct = "String filename;"
         out_monster_ref_struct += "\nMonsterName evos[8];"
 

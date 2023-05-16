@@ -2,3 +2,4 @@ sprites
 bg
 *.pyc
 *.pkl
+out/MonsterDefs.h

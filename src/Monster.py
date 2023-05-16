@@ -2,20 +2,6 @@
 
 import pygame as pg
 from random import randint
-from dataclasses import dataclass
-
-@dataclass 
-class MonsterData:
-    filepath: str
-    name: str
-    stage: str
-    move_style: str
-    speed: int
-    bg: str
-    evos: list[str]
-
-    tab: int
-    coords: int
 
 class Monster(pg.sprite.Sprite):
     def __init__(self, data):
