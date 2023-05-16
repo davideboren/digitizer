@@ -91,12 +91,17 @@ class Sandbox(pg.sprite.Sprite):
                    mon.evos.append(evos[evo_name])
 
     def export(self):
-        out_monster_ref_struct = ""
         out_monster_names = ""
         out_monster_refs = ""
-
-        out_monster_ref_struct = "String filename;"
-        out_monster_ref_struct += "\nMonsterName evos[8];"
+         
+        out_monster_ref_struct = "\
+        String filepath;\n\
+        MonsterName name;\n\
+        MonsterStage stage;\n\
+        String move_style;\n\
+        int speed;\n\
+        String bg;\n\
+        MonsterName evos[8];"
 
         for tab in self.mons:
             for mon in tab:
@@ -110,8 +115,13 @@ class Sandbox(pg.sprite.Sprite):
                     evos = "Agu2006_Digitama"
 
                 out_monster_refs += '{\n\t"' \
-                + mon.data.filepath.replace(".png",".bmp") + '",\n' \
-                + '\t{' + evos + '}' \
+                + mon.data.filepath.replace(".png",".bmp") + '",\n\t' \
+                + mon.data.name + ',\n\t' \
+                + mon.data.stage + ',\n\t' \
+                + mon.data.move_style + ',\n\t' \
+                + str(mon.data.speed) + ',\n\t' \
+                + mon.data.bg + ',\n\t' \
+                + '{' + evos + '}' \
                 + '\n},\n'
 
         out_monster_names = out_monster_names.rstrip(",\n")

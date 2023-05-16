@@ -24,7 +24,15 @@ out_monster_ref_struct
 };
 
 static const MonsterRef MonsterDB[] = {
-{"null", {Kera_Digitama}},
+{
+	"sprites/digitama/Agu2006_Digitama.bmp",
+	Empty,
+	digitama,
+	"walk",
+	2,
+	"None",
+	{Agu2006_Digitama}
+},
 out_monster_refs
 };
 #endif //_MONSTER_DEFS_H_
