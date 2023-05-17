@@ -34,7 +34,7 @@ static const MonsterRef MonsterDB[] = {
 	"walk",
 	2,
 	"None",
-	{Agu2006_Digitama}
+	{Empty}
 },
 out_monster_refs
 };
