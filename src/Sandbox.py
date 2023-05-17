@@ -41,9 +41,16 @@ class Sandbox(pg.sprite.Sprite):
     def add_mon(self, mon):
         if mon.data.tab == -1:
             mon.data.tab = self.tab
-        cur_mon_names = self.get_mon_names(mon.data.tab)
-        if mon.data.name not in cur_mon_names:
+        tab_mon_names = self.get_mon_names(mon.data.tab)
+        all_mon_names = self.get_mon_names()
+        if mon.data.name not in tab_mon_names:
+            instances = 0
+            for name in all_mon_names:
+                if name == mon.data.name:
+                    instances += 1
             self.mons[mon.data.tab].add(mon)
+            if instances != 0:
+                mon.data.name = mon.data.name + f"_{instances}"
 
     def remove_mon(self, mon):
         for tab_mon in self.mons[self.tab]:
