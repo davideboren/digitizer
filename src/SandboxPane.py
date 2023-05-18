@@ -5,10 +5,10 @@ from config import *
 from Monster import Monster 
 from MonsterData import MonsterData
 
-class Sandbox(pg.sprite.Sprite):
+class SandboxPane(pg.sprite.Sprite):
 
     def __init__(self):
-        super(Sandbox, self).__init__()
+        super(SandboxPane, self).__init__()
 
         self.surf = pg.Surface((736, SCREEN_H - PAD*2 - 24))
         self.rect = self.surf.get_rect().move(284 + PAD, 24 + PAD)

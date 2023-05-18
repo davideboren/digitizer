@@ -10,9 +10,9 @@ import copy
 
 from Monster import Monster
 from MonsterData import MonsterData
-from Dropdown import Dropdown
-from Sandbox import Sandbox
-from Preview import Preview
+from SandboxPane import SandboxPane
+from BackgroundPane import BackgroundPane
+from PreviewPane import PreviewPane
 from config import *
 
 def run_gui():
@@ -53,20 +53,9 @@ def run_gui():
     mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(
         mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
     
-    sandbox = Sandbox()
-
-    bg_pane = pg.sprite.Sprite()
-    bg_pane.surf = pg.Surface((BG_PANE_W,BG_PANE_H))
-    bg_pane.rect = bg_pane.surf.get_rect().move(
-        sandbox.rect.right + PAD, 24 + PAD)
-    pg.draw.rect(bg_pane.surf, PANE_BG_DARK,
-                 (0,0,bg_pane.rect.w, bg_pane.rect.h), 
-                 border_radius=4)
-    pg.draw.rect(bg_pane.surf, FG_WHITE,
-                 (0,0,bg_pane.rect.w, bg_pane.rect.h), 
-                 border_radius=4, width = 2)
-
-    preview_pane = Preview()
+    sandbox_pane = SandboxPane()
+    bg_pane = BackgroundPane()
+    preview_pane = PreviewPane()
     
     panes.add(mon_pane_border)
     panes.add(mon_pane)
@@ -177,7 +166,7 @@ def run_gui():
                     for mon in mons[stage_sel]:
                         if mon.rect.collidepoint(event.pos):
                             data_copy = copy.deepcopy(mon.data)
-                            sandbox.add_mon(Monster(data_copy))
+                            sandbox_pane.add_mon(Monster(data_copy))
             elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if mon_pane.rect.collidepoint(mouse_pos):
@@ -207,8 +196,8 @@ def run_gui():
         
         preview_pane.draw(screen)
 
-        sandbox.update(event_list)
-        sandbox.draw(screen)
+        sandbox_pane.update(event_list)
+        sandbox_pane.draw(screen)
         
         mon_pane.surf.fill(PANE_BG_DARK)
         mon_pane_btn.surf = mon_font.render(stage_sel,False,FG_ORANGE,PANE_BG_LITE)

@@ -4,10 +4,10 @@ from config import *
 from Monster import Monster
 from MonsterData import MonsterData
 
-class Preview(pg.sprite.Sprite):
+class PreviewPane(pg.sprite.Sprite):
 
     def __init__(self):
-        super(Preview, self).__init__()
+        super(PreviewPane, self).__init__()
 
         self.surf = pg.Surface((PREVIEW_PANE_W, PREVIEW_PANE_H))
         self.rect = self.surf.get_rect().move(
