@@ -194,7 +194,8 @@ class SandboxPane(pg.sprite.Sprite):
                             self.preview_mon = mon
                             pg.event.post(
                                 pg.event.Event(MON_SELECT,
-                                                {"filepath":mon.data.filepath}))
+                                                {"filepath":mon.data.filepath,
+                                                 "bg":mon.data.bg}))
                 elif event.button == 2:
                     for mon in self.get_mons():
                         if not mon.rect.collidepoint(event.pos):
@@ -239,6 +240,9 @@ class SandboxPane(pg.sprite.Sprite):
                         mon.rect.x = mouse_x + self.offset_x
                         mon.rect.y = mouse_y + self.offset_y
                         mon.data.coords = (mon.rect.x, mon.rect.y)
+            elif event.type == BG_SELECT:
+                if self.preview_mon:
+                    self.preview_mon.data.bg = f'"{event.filepath}"'
         
         self.moused_over_mon = None
         for mon in self.get_mons():

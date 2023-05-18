@@ -60,8 +60,6 @@ def run_gui():
     panes.add(mon_pane_border)
     panes.add(mon_pane)
     panes.add(mon_pane_btn)
-    panes.add(bg_pane)
-    panes.add(preview_pane)
     
     # Monsters
     mons = {}
@@ -98,25 +96,6 @@ def run_gui():
                 x[fdir] = (x[fdir] + 40) % (cols * 40)
                 if x[fdir] == 0:
                     y[fdir] += 40
-
-    bgs = pg.sprite.LayeredUpdates()
-    bg_sel = None
-
-    for r,d,f in os.walk("bg/"):
-        for file in f:
-            if 'png' in file:
-                filepath = os.path.join(r,file).replace('\\','/')
-                bg = pg.sprite.Sprite()
-                bg.img = pg.image.load(filepath)
-                bg.surf = pg.Surface((128+2,128+2))
-                bg.surf.fill(FG_WHITE)
-                bg.rect = pg.Rect(1,1,128+2,128+2)
-                bg.surf.blit(pg.transform.scale(bg.img,(128,128)),bg.rect)
-                bg.rect.move_ip(BG_PANE_W/2 - bg.rect.w/2, PAD)
-                bgs.add(bg)
-                bg_sel = bg
-
-    preview_pane.set_bg(bg_sel)
 
     #Info 
     info = pg.sprite.LayeredUpdates()
@@ -174,8 +153,6 @@ def run_gui():
                     for mon in mons[stage_sel]:
                         mon.rect.y += 25*event.y
                         mon.data.coords = mon.rect.topleft
-            elif event.type == MON_SELECT:
-                preview_pane.set_mon(event.filepath)
 
         mouse_pos = pg.mouse.get_pos()
         moused_over = ""
@@ -194,16 +171,18 @@ def run_gui():
             pane.update()
             screen.blit(pane.surf,pane.rect)
         
-        preview_pane.draw(screen)
 
         sandbox_pane.update(event_list)
         sandbox_pane.draw(screen)
+
+        bg_pane.update(event_list)
+        bg_pane.draw(screen)
+
+        preview_pane.update(event_list)
+        preview_pane.draw(screen)
         
         mon_pane.surf.fill(PANE_BG_DARK)
         mon_pane_btn.surf = mon_font.render(stage_sel,False,FG_ORANGE,PANE_BG_LITE)
-
-        for bg in bgs:
-            bg_pane.surf.blit(bg.surf,bg.rect)
 
         for mon in mons[stage_sel]:
             mon.update()

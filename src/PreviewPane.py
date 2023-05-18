@@ -23,8 +23,16 @@ class PreviewPane(pg.sprite.Sprite):
         self.bg = None
         self.mon = None
 
-    def set_bg(self,bg_sprite):
-        self.bg = bg_sprite
+        self.set_bg("bg/bg_0.bmp")
+
+    def set_bg(self,bg_filepath):
+        self.bg = pg.sprite.Sprite()
+        self.bg.img = pg.image.load(bg_filepath)
+        self.bg.surf = pg.Surface((128+2,128+2))
+        self.bg.surf.fill(FG_WHITE)
+        self.bg.rect = pg.Rect(1,1,128+2,128+2)
+        self.bg.surf.blit(pg.transform.scale(self.bg.img,(128,128)),
+                          self.bg.rect)
 
     def set_mon(self,filename):
         data2 = MonsterData(
@@ -35,7 +43,13 @@ class PreviewPane(pg.sprite.Sprite):
         self.mon.set_border((0,0,0,0))
         self.mon.bg_color = (0,0,0,0)
         
-    def update(self):
+    def update(self, event_list):
+        for event in event_list:
+            if event.type == BG_SELECT:
+                self.set_bg(event.filepath)
+            elif event.type == MON_SELECT:
+                self.set_mon(event.filepath)
+                self.set_bg(event.bg.strip('"'))
         if self.mon != None:
             self.mon.update()
 
