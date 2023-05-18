@@ -19,6 +19,8 @@ class Sandbox(pg.sprite.Sprite):
         self.mons = []
         self.mons.append(pg.sprite.LayeredUpdates())
         self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
 
         self.mon_sel = None
         self.preview_mon = None

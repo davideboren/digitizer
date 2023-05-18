@@ -10,7 +10,7 @@ class MonsterData:
         self.move_style = kwargs.get('move_style', '"walk"')
         default_speed = 0 if self.stage == "digitama" else 2
         self.speed = kwargs.get('speed', default_speed)
-        self.bg = kwargs.get('bg', '"None"')
+        self.bg = kwargs.get('bg', '"bg/bg_0.bmp"')
         self.evos = kwargs.get('evos', [])
 
         #Digitizer only
