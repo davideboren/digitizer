@@ -11,3 +11,6 @@ Digitizer also contains a function that automates the file conversions from tran
 
 Both Tyrannomon and Digitizer are built around the sprite format of Tortoiseshel's excellent 16x16 Digimon sprite resource.
 https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/
+
+
+![prev](https://github.com/davideboren/digitizer/assets/7462768/617cc406-cbde-4945-9835-3ad847f3fd26)
