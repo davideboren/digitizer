@@ -42,6 +42,15 @@ class Monster(pg.sprite.Sprite):
         self.surf.fill(self.border_color)
         self.surf.blit(pg.transform.scale(self.sprite,(32,32)),(1,1))
 
+    def make_transparent(self):
+        self.set_border((0,0,0,0))
+        self.bg_color = (0,0,0,0)
+        self.surf = pg.Surface((34,34), pg.SRCALPHA)
+        self.sprite = pg.Surface((16,16), pg.SRCALPHA)
+        self.sprite.fill(self.bg_color)
+        self.sprite.blit(self.img, (0,0), (self.spritesheet_coords,(16,16)))
+        self.surf.blit(pg.transform.scale(self.sprite,(32,32)),(1,1))
+
     def update(self):
         self.ticks += 1
         if(self.ticks == 30):

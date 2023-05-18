@@ -40,8 +40,7 @@ class PreviewPane(pg.sprite.Sprite):
             coords = (self.rect.centerx - 16, self.rect.bottom - 76)
         )
         self.mon = Monster(data2)
-        self.mon.set_border((0,0,0,0))
-        self.mon.bg_color = (0,0,0,0)
+        self.mon.make_transparent()
         
     def update(self, event_list):
         for event in event_list:
