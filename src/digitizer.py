@@ -13,6 +13,7 @@ from MonsterData import MonsterData
 from SandboxPane import SandboxPane
 from BackgroundPane import BackgroundPane
 from PreviewPane import PreviewPane
+from MicroConsole import MicroConsole
 from config import *
 
 def run_gui():
@@ -56,6 +57,7 @@ def run_gui():
     sandbox_pane = SandboxPane()
     bg_pane = BackgroundPane()
     preview_pane = PreviewPane()
+    console = MicroConsole()
     
     panes.add(mon_pane_border)
     panes.add(mon_pane)
@@ -97,27 +99,12 @@ def run_gui():
                 if x[fdir] == 0:
                     y[fdir] += 40
 
-    #Info 
-    info = pg.sprite.LayeredUpdates()
-
-    menu_bar = pg.sprite.Sprite()
-    menu_bar.surf = pg.Surface((SCREEN_W, 24))
-    menu_bar.rect = menu_bar.surf.get_rect()
-    menu_bar.surf.fill(MENU_BG_COLOR)
-    pg.draw.line(menu_bar.surf,(5,15,35),
-                 (0,menu_bar.rect[3] - 2),
-                 (SCREEN_W,menu_bar.rect[3] - 2),
-                 width = 2)
-
-    info.add(menu_bar)
-
     stage_sel = list(STAGE_ORDER.keys())[0]
 
     moused_over = "" 
     mon_indicator = mon_font.render(moused_over,False,FG_ORANGE,(25,25,25))
 
     while running:
-        
         clock.tick(60)
 
         event_list = pg.event.get()
@@ -127,16 +114,24 @@ def run_gui():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-                elif event.key in STAGE_KEYS.keys():
-                    stage_sel = STAGE_KEYS[event.key]
-                elif event.key == K_w:
-                    stages = list(STAGE_ORDER.keys())
-                    stage_sel = stages[(stages.index(stage_sel)-1)%len(stages)]
-                elif event.key == K_s:
-                    stages = list(STAGE_ORDER.keys())
-                    stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
-                elif event.key == K_c:
-                    convert_sprites()
+                if not console.active:
+                    if event.key in STAGE_KEYS.keys():
+                        stage_sel = STAGE_KEYS[event.key]
+                    elif event.key == K_w:
+                        stages = list(STAGE_ORDER.keys())
+                        stage_sel = stages[(stages.index(stage_sel)-1)%len(stages)]
+                    elif event.key == K_s:
+                        stages = list(STAGE_ORDER.keys())
+                        stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
+                    elif event.key == K_c:
+                        convert_sprites()
+                    elif event.key == K_d:
+                        sandbox_pane.change_tab(1)
+                    elif event.key == K_a:
+                        sandbox_pane.change_tab(-1)
+                    elif event.key == K_e:
+                        sandbox_pane.export()
+    
             elif event.type == QUIT:
                 running = False
                 
@@ -171,7 +166,6 @@ def run_gui():
             pane.update()
             screen.blit(pane.surf,pane.rect)
         
-
         sandbox_pane.update(event_list)
         sandbox_pane.draw(screen)
 
@@ -189,9 +183,9 @@ def run_gui():
             mon_pane.surf.blit(mon.surf,(mon.rect.x-mon_pane.rect.left, mon.rect.y-mon_pane.rect.top, 
                                          mon.rect.w, mon.rect.h))
 
-        for i in info:
-            i.update()
-            screen.blit(i.surf, i.rect)
+        console.update(event_list)
+        console.draw(screen)
+
         if moused_over:
             screen.blit(mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))
 

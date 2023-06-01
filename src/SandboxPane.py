@@ -82,17 +82,17 @@ class SandboxPane(pg.sprite.Sprite):
     def change_tab(self, dir):
         self.tab = (self.tab + dir) % len(self.mons)
     
-    def save(self):
+    def save(self, filename):
         out = []
         for tab in self.mons:
             for mon in tab:
                 out.append(mon.data)
-        with open('save.pkl','wb') as file:
+        with open(filename,'wb') as file:
             pickle.dump(out,file)
 
-    def load(self):
+    def load(self, filename):
         evos = {}
-        with open('save.pkl','rb') as file:
+        with open(filename,'rb') as file:
             mon_data = pickle.load(file)
             for data in mon_data:
                 mon = Monster(data)
@@ -166,20 +166,8 @@ class SandboxPane(pg.sprite.Sprite):
 
     def update(self, event_list):
         for event in event_list:
-            if event.type == KEYDOWN:
-                if event.key == K_d:
-                    self.change_tab(1)
-                elif event.key == K_a:
-                    self.change_tab(-1)
-                elif event.key == K_o:
-                    self.save()
-                elif event.key == K_l:
-                    self.load()
-                elif event.key == K_e:
-                    self.export()
-                
             #Drag and Drop
-            elif event.type == pg.MOUSEBUTTONDOWN:
+            if event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for mon in self.get_mons():
                         if not mon.rect.collidepoint(event.pos):
@@ -243,6 +231,12 @@ class SandboxPane(pg.sprite.Sprite):
             elif event.type == BG_SELECT:
                 if self.preview_mon:
                     self.preview_mon.data.bg = f'"{event.filepath}"'
+            elif event.type == SAVE_REQUEST:
+                if event.filename.endswith(".pkl"):
+                    self.save(event.filename)
+            elif event.type == LOAD_REQUEST:
+                if event.filename.endswith(".pkl"):
+                    self.load(event.filename)
         
         self.moused_over_mon = None
         for mon in self.get_mons():
