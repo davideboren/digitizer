@@ -91,6 +91,12 @@ class SandboxPane(pg.sprite.Sprite):
             pickle.dump(out,file)
 
     def load(self, filename):
+        self.tab = 0
+        self.mons = []
+        self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
+        self.mons.append(pg.sprite.LayeredUpdates())
         evos = {}
         with open(filename,'rb') as file:
             mon_data = pickle.load(file)
@@ -231,12 +237,17 @@ class SandboxPane(pg.sprite.Sprite):
             elif event.type == BG_SELECT:
                 if self.preview_mon:
                     self.preview_mon.data.bg = f'"{event.filepath}"'
-            elif event.type == SAVE_REQUEST:
+            elif event.type == CMD_SAVE:
                 if event.filename.endswith(".pkl"):
                     self.save(event.filename)
-            elif event.type == LOAD_REQUEST:
+            elif event.type == CMD_LOAD:
                 if event.filename.endswith(".pkl"):
                     self.load(event.filename)
+                    uc_msg("Loaded " + event.filename)
+                else:
+                    uc_msg("Invalid filename.")
+            elif event.type == CMD_EXPORT:
+                self.export()
         
         self.moused_over_mon = None
         for mon in self.get_mons():

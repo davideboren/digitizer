@@ -13,13 +13,16 @@ class MicroConsole(pg.sprite.Sprite):
         self.surf.fill(CONSOLE_BG_COLOR)
         self.font = pg.font.Font('grand9k.ttf',14)
         self.font_color = FG_LITE_GRAY
+
+        self.prompt = "# "
         self.cur = "_"
         self.input = ""
+        self.output = ""
         self.auto_idx = 0
 
-        self.text_zone = self.font.render("> " + self.input + self.cur, 
+        self.input_zone = self.font.render(self.prompt + self.input + self.cur, 
                                           False, self.font_color, CONSOLE_BG_COLOR)
-        self.surf.blit(self.text_zone, (2, 0))
+        self.surf.blit(self.input_zone, (2, 0))
 
         self.ticks = 0
         self.active = False
@@ -27,7 +30,6 @@ class MicroConsole(pg.sprite.Sprite):
     def make_active(self):
         self.font_color = FG_WHITE
         self.active = True
-        pg.event.post(pg.event.Event(CONSOLE_ACTIVE))
 
     def make_inactive(self):
         self.font_color = FG_LITE_GRAY
@@ -36,13 +38,14 @@ class MicroConsole(pg.sprite.Sprite):
     def send_cmd(self):
         if self.input.startswith("save "):
             savefile = self.input.split(" ")[1]
-            pg.event.post(pg.event.Event(SAVE_REQUEST,
+            pg.event.post(pg.event.Event(CMD_SAVE,
                                          {"filename" : savefile}))
-
         if self.input.startswith("load "):
             loadfile = self.input.split(" ")[1]
-            pg.event.post(pg.event.Event(LOAD_REQUEST,
+            pg.event.post(pg.event.Event(CMD_LOAD,
                                          {"filename" : loadfile}))
+        if self.input == ("export"):
+            pg.event.post(pg.event.Event(CMD_EXPORT))
 
 
         self.input = ""
@@ -52,6 +55,8 @@ class MicroConsole(pg.sprite.Sprite):
             if (event.type == pg.MOUSEBUTTONDOWN and event.button == 1):
                 if self.rect.collidepoint(pg.mouse.get_pos()):
                     self.make_active()
+                elif self.active:
+                    self.make_inactive()
             elif event.type == pg.KEYDOWN and event.key == K_BACKQUOTE:
                 if not self.active:
                     self.make_active()
@@ -59,6 +64,8 @@ class MicroConsole(pg.sprite.Sprite):
                     self.make_inactive()
             elif event.type == pg.KEYDOWN and event.key == K_ESCAPE:
                 self.make_inactive()
+            elif event.type == CMD_MSG:
+                self.output = event.msg
             elif self.active:
                 if event.type == pg.KEYDOWN:
                     if event.key == K_BACKSPACE:
@@ -72,7 +79,6 @@ class MicroConsole(pg.sprite.Sprite):
                                 file = saves[self.auto_idx]
                                 self.input = "load " + file
                                 self.auto_idx = (self.auto_idx + 1) % len(saves)
-
                     else:
                         self.input += event.unicode
 
@@ -82,10 +88,15 @@ class MicroConsole(pg.sprite.Sprite):
                 self.cur = " " if self.cur == "_" else "_"
             self.ticks = 0
 
-        self.text_zone = self.font.render("> " + self.input + self.cur,
+        self.input_zone = self.font.render(self.prompt + self.input + self.cur,
                                           False, self.font_color, CONSOLE_BG_COLOR)
+        self.output_zone = self.font.render(self.output, False, 
+                                            self.font_color, CONSOLE_BG_COLOR)
+        self.output_rect = self.output_zone.get_rect()
+        self.output_rect.right = SCREEN_W
         self.surf.fill(CONSOLE_BG_COLOR)
-        self.surf.blit(self.text_zone, (2, 0))
+        self.surf.blit(self.input_zone, (2, 0))
+        self.surf.blit(self.output_zone, self.output_rect)
 
     def draw(self, surf):
         surf.blit(self.surf, self.rect)

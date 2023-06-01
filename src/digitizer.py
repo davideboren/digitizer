@@ -129,8 +129,6 @@ def run_gui():
                         sandbox_pane.change_tab(1)
                     elif event.key == K_a:
                         sandbox_pane.change_tab(-1)
-                    elif event.key == K_e:
-                        sandbox_pane.export()
     
             elif event.type == QUIT:
                 running = False
