@@ -18,7 +18,10 @@ class MicroConsole(pg.sprite.Sprite):
         self.cur = "_"
         self.input = ""
         self.output = ""
-        self.auto_idx = 0
+        self.tabbing = False
+        self.tab_cmd = []
+        self.tab_options = []
+        self.tab_idx = 0
 
         self.input_zone = self.font.render(self.prompt + self.input + self.cur, 
                                           False, self.font_color, CONSOLE_BG_COLOR)
@@ -40,12 +43,14 @@ class MicroConsole(pg.sprite.Sprite):
             savefile = self.input.split(" ")[1]
             pg.event.post(pg.event.Event(CMD_SAVE,
                                          {"filename" : savefile}))
-        if self.input.startswith("load "):
+        elif self.input.startswith("load "):
             loadfile = self.input.split(" ")[1]
             pg.event.post(pg.event.Event(CMD_LOAD,
                                          {"filename" : loadfile}))
-        if self.input == ("export"):
+        elif self.input == ("export"):
             pg.event.post(pg.event.Event(CMD_EXPORT))
+        else:
+            uc_msg("Unrecognized command")
 
 
         self.input = ""
@@ -68,17 +73,29 @@ class MicroConsole(pg.sprite.Sprite):
                 self.output = event.msg
             elif self.active:
                 if event.type == pg.KEYDOWN:
+                    if event.key != K_TAB:
+                        self.tabbing = False
+                        self.tab_idx = 0
                     if event.key == K_BACKSPACE:
                         self.input = self.input[:-1]
                     elif event.key == K_RETURN:
                         self.send_cmd()
                     elif event.key == K_TAB:
-                        if self.input.startswith("load "):
-                            saves = glob.glob("*.pkl") 
-                            if saves:
-                                file = saves[self.auto_idx]
+                        if not self.tabbing:
+                            self.tab_cmd = self.input.split(' ')
+                            self.tabbing = True
+                        if self.tab_cmd[0] == "":
+                            self.tab_options = ['save ', 'load ', 'export']
+                            self.input = self.tab_options[self.tab_idx]
+                        elif self.tab_cmd[0] == "load":
+                            prefix = ""
+                            if len(self.tab_cmd) > 1:
+                                prefix = self.tab_cmd[1]
+                            self.tab_options = glob.glob(prefix + "*.pkl") 
+                            if self.tab_options:
+                                file = self.tab_options[self.tab_idx]
                                 self.input = "load " + file
-                                self.auto_idx = (self.auto_idx + 1) % len(saves)
+                        self.tab_idx = (self.tab_idx + 1) % len(self.tab_options)
                     else:
                         self.input += event.unicode
 
@@ -93,7 +110,7 @@ class MicroConsole(pg.sprite.Sprite):
         self.output_zone = self.font.render(self.output, False, 
                                             self.font_color, CONSOLE_BG_COLOR)
         self.output_rect = self.output_zone.get_rect()
-        self.output_rect.right = SCREEN_W
+        self.output_rect.right = SCREEN_W - 2
         self.surf.fill(CONSOLE_BG_COLOR)
         self.surf.blit(self.input_zone, (2, 0))
         self.surf.blit(self.output_zone, self.output_rect)

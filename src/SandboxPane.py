@@ -239,7 +239,11 @@ class SandboxPane(pg.sprite.Sprite):
                     self.preview_mon.data.bg = f'"{event.filepath}"'
             elif event.type == CMD_SAVE:
                 if event.filename.endswith(".pkl"):
-                    self.save(event.filename)
+                    savefile = event.filename
+                else:
+                    savefile = event.filename + ".pkl"
+                self.save(savefile)
+                uc_msg("Saved as " + savefile)
             elif event.type == CMD_LOAD:
                 if event.filename.endswith(".pkl"):
                     self.load(event.filename)
