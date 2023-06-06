@@ -168,6 +168,7 @@ class SandboxPane(pg.sprite.Sprite):
                 out.write(f)
 
         self.remove_mon(rand_egg)
+        uc_msg("Exported to out/MonsterDefs.h")
 
 
     def update(self, event_list):
@@ -238,7 +239,10 @@ class SandboxPane(pg.sprite.Sprite):
                 if self.preview_mon:
                     self.preview_mon.data.bg = f'"{event.filepath}"'
             elif event.type == CMD_SAVE:
-                if event.filename.endswith(".pkl"):
+                if event.filename == "":
+                    uc_msg("Please enter a filename")
+                    break
+                elif event.filename.endswith(".pkl"):
                     savefile = event.filename
                 else:
                     savefile = event.filename + ".pkl"
@@ -252,6 +256,10 @@ class SandboxPane(pg.sprite.Sprite):
                     uc_msg("Invalid filename.")
             elif event.type == CMD_EXPORT:
                 self.export()
+            elif event.type == CMD_NEW_TAB:
+                self.add_tab()
+                self.tab = len(self.mons) - 1
+                uc_msg(f"Changed to tab {self.tab}")
         
         self.moused_over_mon = None
         for mon in self.get_mons():
