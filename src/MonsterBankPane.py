@@ -14,7 +14,7 @@ class MonsterBankPane(pg.sprite.Sprite):
         self.border = pg.sprite.Sprite()
         self.border.surf = pg.Surface((270, SCREEN_H - PAD*2 - 24),)
         self.border.surf.fill(SCREEN_BG)
-        self.border.rect = self.border.surf.get_rect().move(16,24 + PAD)
+        self.border.rect = self.border.surf.get_rect().move(16, 24 + PAD)
         pg.draw.rect(self.border.surf, PANE_BG_LITE,
                     (0,0,self.border.rect.w, self.border.rect.h), 
                     border_radius=4)
@@ -22,20 +22,21 @@ class MonsterBankPane(pg.sprite.Sprite):
                     (0,0,self.border.rect.w, self.border.rect.h), 
                     border_radius=4, width=2)
 
-        self.surf = pg.Surface((266, SCREEN_H - PAD*2 - 24 - 24 - 2),)
+        self.surf = pg.Surface((266, SCREEN_H - PAD*2 - 24 - 24 - 2))
         self.surf.fill(PANE_BG_DARK)
         self.rect = self.surf.get_rect().move(16 + 2, 24 + 24 + PAD)
         
         self.btn = pg.sprite.Sprite()
-        self.btn.surf = self.font.render("Stage", False, FG_ORANGE,PANE_BG_LITE)
+        self.btn.surf = self.font.render(
+            "Stage", False, FG_ORANGE, PANE_BG_LITE)
         self.btn.rect = self.btn.surf.get_rect().move(
-            self.border.rect.left + 6,self.border.rect.top + 3)
+            self.border.rect.left + 6, self.border.rect.top + 3)
 
         self.stage_sel = list(STAGE_ORDER.keys())[0]
 
         self.moused_over = "" 
         self.mon_indicator = self.font.render(
-            self.moused_over,False,FG_ORANGE,(25,25,25))
+            self.moused_over, False, FG_ORANGE, (25,25,25))
 
         self.keys_enabled = True
 
@@ -105,7 +106,8 @@ class MonsterBankPane(pg.sprite.Sprite):
                         mon.rect.y += 25*event.y
                         mon.data.coords = mon.rect.topleft
 
-        self.btn.surf = self.font.render(self.stage_sel, False, FG_ORANGE,PANE_BG_LITE)
+        self.btn.surf = self.font.render(
+            self.stage_sel, False, FG_ORANGE,PANE_BG_LITE)
 
         mouse_pos = pg.mouse.get_pos()
         self.moused_over = ""
@@ -124,13 +126,17 @@ class MonsterBankPane(pg.sprite.Sprite):
 
     def draw(self, screen):
         self.surf.fill(PANE_BG_DARK)
-        self.btn.surf = self.font.render(self.stage_sel,False,FG_ORANGE,PANE_BG_LITE)
+        self.btn.surf = self.font.render(
+            self.stage_sel, False, FG_ORANGE, PANE_BG_LITE)
         for mon in self.mons[self.stage_sel]:
             mon.update()
-            self.surf.blit(mon.surf,(mon.rect.x-self.rect.left, mon.rect.y-self.rect.top, 
-                                         mon.rect.w, mon.rect.h))
+            mon_x = mon.rect.x - self.rect.left
+            mon_y = mon.rect.y - self.rect.top
+            self.surf.blit(mon.surf, (mon_x, mon_y, mon.rect.w, mon.rect.h))
             screen.blit(self.border.surf, self.border.rect)
             screen.blit(self.surf, self.rect)
             screen.blit(self.btn.surf, self.btn.rect)
         if self.moused_over:
-            screen.blit(self.mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))
+            indicator_x = pg.mouse.get_pos()[0] + 12
+            indicator_y = pg.mouse.get_pos()[1] - 12
+            screen.blit(self.mon_indicator, (indicator_x, indicator_y))

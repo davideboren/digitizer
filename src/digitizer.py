@@ -29,18 +29,18 @@ def run_gui():
 
     running = True
 
-    bank_pane = MonsterBankPane()
-    sandbox_pane = SandboxPane()
+    console = MicroConsole()
     bg_pane = BackgroundPane()
     preview_pane = PreviewPane()
-    console = MicroConsole()
+    sandbox_pane = SandboxPane()
+    bank_pane = MonsterBankPane()
 
     panes = pg.sprite.LayeredUpdates()
-    panes.add(bank_pane)
-    panes.add(sandbox_pane)
+    panes.add(console)
     panes.add(bg_pane)
     panes.add(preview_pane)
-    panes.add(console)
+    panes.add(bank_pane)
+    panes.add(sandbox_pane)
 
     bank_pane.load_sprites(screen)
 
