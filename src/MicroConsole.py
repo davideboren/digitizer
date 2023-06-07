@@ -92,7 +92,12 @@ class MicroConsole(pg.sprite.Sprite):
                         self.tab_cmd = self.input.split(' ')
                         self.tabbing = True
                     if self.tab_cmd[0] == "":
-                        self.tab_options = ['save ', 'load ', 'new_tab', 'export', 'convert_sprites']
+                        self.tab_options = [
+                            'save ', 
+                            'load ', 
+                            'new_tab', 
+                            'export', 
+                            'convert_sprites']
                         self.input = self.tab_options[self.tab_idx]
                     elif self.tab_cmd[0] == "load":
                         prefix = ""

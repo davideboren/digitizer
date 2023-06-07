@@ -14,6 +14,7 @@ from BackgroundPane import BackgroundPane
 from PreviewPane import PreviewPane
 from MicroConsole import MicroConsole
 from MonsterBankPane import MonsterBankPane
+from InfoLayer import InfoLayer
 from config import *
 
 def run_gui():
@@ -34,6 +35,7 @@ def run_gui():
     preview_pane = PreviewPane()
     sandbox_pane = SandboxPane()
     bank_pane = MonsterBankPane()
+    info_layer = InfoLayer()
 
     panes = pg.sprite.LayeredUpdates()
     panes.add(console)
@@ -41,6 +43,7 @@ def run_gui():
     panes.add(preview_pane)
     panes.add(bank_pane)
     panes.add(sandbox_pane)
+    panes.add(info_layer)
 
     bank_pane.load_sprites(screen)
 

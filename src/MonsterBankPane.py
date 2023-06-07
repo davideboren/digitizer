@@ -35,8 +35,7 @@ class MonsterBankPane(pg.sprite.Sprite):
         self.stage_sel = list(STAGE_ORDER.keys())[0]
 
         self.moused_over = "" 
-        self.mon_indicator = self.font.render(
-            self.moused_over, False, FG_ORANGE, (25,25,25))
+        self.nameplate_active = False
 
         self.keys_enabled = True
 
@@ -110,19 +109,25 @@ class MonsterBankPane(pg.sprite.Sprite):
             self.stage_sel, False, FG_ORANGE,PANE_BG_LITE)
 
         mouse_pos = pg.mouse.get_pos()
-        self.moused_over = ""
+        moused = False
         for mon in self.mons[self.stage_sel]:
-            if not mon.rect.collidepoint(mouse_pos):
-                continue
             if not mon.rect.colliderect(self.rect):
                 continue
-            if self.moused_over != mon.data.name:
+            if not mon.rect.collidepoint(mouse_pos):
+                if mon.border_color != (200,200,200):
+                    mon.set_border((200,200,200))
+                continue
+            #Collided
+            moused = True
+            if mon.data.name != self.moused_over:
                 mon.set_border(FG_WHITE)
                 self.moused_over = mon.data.name
-                self.mon_indicator = self.font.render(
-                    mon.data.name, False, FG_ORANGE, (25,25,25))
-            elif mon.border_color != (200,200,200):
-                mon.set_border((200,200,200))
+                self.nameplate_active = True
+                ev = pg.event.Event(INFO_NAMEPLATE_ON, {'name':mon.data.name})
+                pg.event.post(ev)
+        if not moused and self.nameplate_active:
+            self.nameplate_active = False
+            pg.event.post(pg.event.Event(INFO_NAMEPLATE_OFF))
 
     def draw(self, screen):
         self.surf.fill(PANE_BG_DARK)
@@ -136,7 +141,3 @@ class MonsterBankPane(pg.sprite.Sprite):
             screen.blit(self.border.surf, self.border.rect)
             screen.blit(self.surf, self.rect)
             screen.blit(self.btn.surf, self.btn.rect)
-        if self.moused_over:
-            indicator_x = pg.mouse.get_pos()[0] + 12
-            indicator_y = pg.mouse.get_pos()[1] - 12
-            screen.blit(self.mon_indicator, (indicator_x, indicator_y))
