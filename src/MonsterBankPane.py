@@ -91,9 +91,9 @@ class MonsterBankPane(pg.sprite.Sprite):
 
             elif event.type == KEYDOWN and self.keys_enabled:
                 if event.key == K_w:
-                    self.change_stage(1)
-                elif event.key == K_s:
                     self.change_stage(-1)
+                elif event.key == K_s:
+                    self.change_stage(1)
                 elif event.key in STAGE_KEYS.keys():
                     self.stage_sel = STAGE_KEYS[event.key]
 
@@ -110,11 +110,15 @@ class MonsterBankPane(pg.sprite.Sprite):
         mouse_pos = pg.mouse.get_pos()
         self.moused_over = ""
         for mon in self.mons[self.stage_sel]:
-            if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(self.rect) and self.moused_over != mon.data.name:
+            if not mon.rect.collidepoint(mouse_pos):
+                continue
+            if not mon.rect.colliderect(self.rect):
+                continue
+            if self.moused_over != mon.data.name:
                 mon.set_border(FG_WHITE)
                 self.moused_over = mon.data.name
                 self.mon_indicator = self.font.render(
-                    mon.data.name,False,FG_ORANGE,(25,25,25))
+                    mon.data.name, False, FG_ORANGE, (25,25,25))
             elif mon.border_color != (200,200,200):
                 mon.set_border((200,200,200))
 

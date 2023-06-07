@@ -54,6 +54,8 @@ class MicroConsole(pg.sprite.Sprite):
             pg.event.post(pg.event.Event(CMD_EXPORT))
         elif self.input.startswith("new_tab"):
             pg.event.post(pg.event.Event(CMD_NEW_TAB))
+        elif self.input.startswith("convert_sprites"):
+            pg.event.post(pg.event.Event(CMD_CONVERT_SPRITES))
         else:
             uc_msg("Unrecognized command")
 
@@ -90,7 +92,7 @@ class MicroConsole(pg.sprite.Sprite):
                         self.tab_cmd = self.input.split(' ')
                         self.tabbing = True
                     if self.tab_cmd[0] == "":
-                        self.tab_options = ['save ', 'load ', 'new_tab', 'export']
+                        self.tab_options = ['save ', 'load ', 'new_tab', 'export', 'convert_sprites']
                         self.input = self.tab_options[self.tab_idx]
                     elif self.tab_cmd[0] == "load":
                         prefix = ""

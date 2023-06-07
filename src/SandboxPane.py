@@ -271,7 +271,7 @@ class SandboxPane(pg.sprite.Sprite):
                     self.change_tab(-1)
                 if event.key == K_d:
                     self.change_tab(1)
-        
+       
         self.moused_over_mon = None
         for mon in self.get_mons():
             mpos = pg.mouse.get_pos()

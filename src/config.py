@@ -61,6 +61,7 @@ CMD_SAVE = pg.USEREVENT + 6
 CMD_LOAD = pg.USEREVENT + 7
 CMD_EXPORT = pg.USEREVENT + 8
 CMD_NEW_TAB = pg.USEREVENT + 9
+CMD_CONVERT_SPRITES = pg.USEREVENT + 10
 
 def uc_msg(msg):
     pg.event.post(pg.event.Event(CMD_MSG,

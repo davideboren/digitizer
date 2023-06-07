@@ -50,22 +50,21 @@ def run_gui():
         event_list = pg.event.get()
         
         for event in event_list:
-            if event.type == KEYDOWN:
+            if event.type == QUIT:
+                running = False
+            elif event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-                if not console.active:
-                    if event.key == K_c:
-                        convert_sprites()
-    
-            elif event.type == QUIT:
-                running = False
-                
+
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for mon in bank_pane.mons[bank_pane.stage_sel]:
                         if mon.rect.collidepoint(event.pos):
                             data_copy = copy.deepcopy(mon.data)
                             sandbox_pane.add_mon(Monster(data_copy))
+
+            elif event.type == CMD_CONVERT_SPRITES:
+                convert_sprites()
 
         #Draw
         screen.fill(SCREEN_BG)
@@ -102,6 +101,8 @@ def convert_sprites():
                 
                 spr = spr.convert("RGB")
                 spr.save(output.replace("png","bmp"))
+        print("Done!")
+
 def main():
     run_gui()
 
