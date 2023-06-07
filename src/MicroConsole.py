@@ -34,10 +34,12 @@ class MicroConsole(pg.sprite.Sprite):
     def make_active(self):
         self.font_color = FG_WHITE
         self.active = True
+        pg.event.post(pg.event.Event(CMD_ACTIVE))
 
     def make_inactive(self):
         self.font_color = FG_LITE_GRAY
         self.active = False
+        pg.event.post(pg.event.Event(CMD_INACTIVE))
 
     def send_cmd(self):
         if self.input.startswith("save "):

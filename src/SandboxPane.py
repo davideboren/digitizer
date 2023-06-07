@@ -27,6 +27,8 @@ class SandboxPane(pg.sprite.Sprite):
         self.moused_over_mon = None
         self.font = pg.font.Font('grand9k.ttf',14)
 
+        self.keys_enabled = True
+
         #Draw grid
         pg.draw.rect(self.surf, (20,20,30), 
                     (0,0,self.rect.w, self.rect.h), border_radius = 4)
@@ -238,6 +240,10 @@ class SandboxPane(pg.sprite.Sprite):
             elif event.type == BG_SELECT:
                 if self.preview_mon:
                     self.preview_mon.data.bg = f'"{event.filepath}"'
+            elif event.type == CMD_ACTIVE:
+                self.keys_enabled = False
+            elif event.type == CMD_INACTIVE:
+                self.keys_enabled = True
             elif event.type == CMD_SAVE:
                 if event.filename == "":
                     uc_msg("Please enter a filename")
@@ -260,6 +266,11 @@ class SandboxPane(pg.sprite.Sprite):
                 self.add_tab()
                 self.tab = len(self.mons) - 1
                 uc_msg(f"Changed to tab {self.tab}")
+            elif event.type == KEYDOWN and self.keys_enabled:
+                if event.key == K_a:
+                    self.change_tab(-1)
+                if event.key == K_d:
+                    self.change_tab(1)
         
         self.moused_over_mon = None
         for mon in self.get_mons():

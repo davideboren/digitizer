@@ -6,7 +6,6 @@ from Monster import Monster
 from MonsterData import MonsterData
 
 class MonsterBankPane(pg.sprite.Sprite):
-
     def __init__(self):
         super(MonsterBankPane, self).__init__()
 
@@ -38,6 +37,8 @@ class MonsterBankPane(pg.sprite.Sprite):
         self.mon_indicator = self.font.render(
             self.moused_over,False,FG_ORANGE,(25,25,25))
 
+        self.keys_enabled = True
+
     def load_sprites(self, screen):
         self.mons = {}
         x = {}
@@ -50,34 +51,53 @@ class MonsterBankPane(pg.sprite.Sprite):
                 x[dir] = 0
                 y[dir] = 0
             for file in f:
-                if 'png' in file:
-                    filename = os.path.join(r,file).replace('\\','/')
-                    fdir = filename.split('/')[1]
-                    if fdir != last_dir:
-                        last_dir = fdir
-                        load_msg = self.font.render(f"Loading sprites: {last_dir}",
-                                                    False,FG_ORANGE,SCREEN_BG)
-                        screen.fill(SCREEN_BG)
-                        screen.blit(load_msg,
-                                    (SCREEN_W/2 - load_msg.get_width()/2,
-                                    SCREEN_H/2 - load_msg.get_height()/2))
-                        pg.display.flip()
+                if 'png' not in file:
+                    continue
+                filename = os.path.join(r,file).replace('\\','/')
+                fdir = filename.split('/')[1]
+                if fdir != last_dir:
+                    last_dir = fdir
+                    load_msg = self.font.render(f"Loading sprites: {last_dir}",
+                                                False,FG_ORANGE,SCREEN_BG)
+                    screen.fill(SCREEN_BG)
+                    screen.blit(load_msg,
+                                (SCREEN_W/2 - load_msg.get_width()/2,
+                                SCREEN_H/2 - load_msg.get_height()/2))
+                    pg.display.flip()
 
-                    data = MonsterData(
-                        filepath = filename,
-                        coords = ( 
-                        self.rect[0] + PAD + x[fdir],
-                        self.rect[1] + PAD + y[fdir]
-                        )
+                data = MonsterData(
+                    filepath = filename,
+                    coords = ( 
+                    self.rect[0] + PAD + x[fdir],
+                    self.rect[1] + PAD + y[fdir]
                     )
-                    self.mons[fdir].add(Monster(data))
-                    x[fdir] = (x[fdir] + 40) % (cols * 40)
-                    if x[fdir] == 0:
-                        y[fdir] += 40
+                )
+                self.mons[fdir].add(Monster(data))
+                x[fdir] = (x[fdir] + 40) % (cols * 40)
+                if x[fdir] == 0:
+                    y[fdir] += 40
+
+    def change_stage(self, dir):
+        stages = list(STAGE_ORDER.keys())
+        self.stage_sel = stages[
+            (stages.index(self.stage_sel) + dir) % len(stages)]
 
     def update(self, event_list):
         for event in event_list:
-          if event.type == pg.MOUSEWHEEL:
+            if event.type == CMD_ACTIVE:
+                self.keys_enabled = False
+            elif event.type == CMD_INACTIVE:
+                self.keys_enabled = True
+
+            elif event.type == KEYDOWN and self.keys_enabled:
+                if event.key == K_w:
+                    self.change_stage(1)
+                elif event.key == K_s:
+                    self.change_stage(-1)
+                elif event.key in STAGE_KEYS.keys():
+                    self.stage_sel = STAGE_KEYS[event.key]
+
+            elif event.type == pg.MOUSEWHEEL:
                 mouse_pos = pg.mouse.get_pos()
                 if self.rect.collidepoint(mouse_pos):
                     self.surf.scroll(0,event.y*25)
