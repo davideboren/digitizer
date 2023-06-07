@@ -14,6 +14,7 @@ from SandboxPane import SandboxPane
 from BackgroundPane import BackgroundPane
 from PreviewPane import PreviewPane
 from MicroConsole import MicroConsole
+from MonsterBankPane import MonsterBankPane
 from config import *
 
 def run_gui():
@@ -32,77 +33,13 @@ def run_gui():
     running = True
 
     # Background Panes
-    panes = pg.sprite.LayeredUpdates()
-
-    mon_pane_border = pg.sprite.Sprite()
-    mon_pane_border.surf = pg.Surface((270, SCREEN_H - PAD*2 - 24),)
-    mon_pane_border.surf.fill(SCREEN_BG)
-    mon_pane_border.rect = mon_pane_border.surf.get_rect().move(16,24 + PAD)
-    pg.draw.rect(mon_pane_border.surf, PANE_BG_LITE,
-                 (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), 
-                 border_radius=4)
-    pg.draw.rect(mon_pane_border.surf, FG_WHITE,
-                 (0,0,mon_pane_border.rect.w, mon_pane_border.rect.h), 
-                 border_radius=4, width=2)
-    mon_pane = pg.sprite.Sprite()
-    mon_pane.surf = pg.Surface((266, SCREEN_H - PAD*2 - 24 - 24 - 2),)
-    mon_pane.surf.fill(PANE_BG_DARK)
-    mon_pane.rect = mon_pane.surf.get_rect().move(16 + 2, 24 + 24 + PAD)
-    
-    mon_pane_btn = pg.sprite.Sprite()
-    mon_pane_btn.surf = mon_font.render("Stage", False, FG_ORANGE,PANE_BG_LITE)
-    mon_pane_btn.rect = mon_pane_btn.surf.get_rect().move(
-        mon_pane_border.rect.left + 6,mon_pane_border.rect.top + 3)
-    
+    bank_pane = MonsterBankPane()
     sandbox_pane = SandboxPane()
     bg_pane = BackgroundPane()
     preview_pane = PreviewPane()
     console = MicroConsole()
-    
-    panes.add(mon_pane_border)
-    panes.add(mon_pane)
-    panes.add(mon_pane_btn)
-    
-    # Monsters
-    mons = {}
-    x = {}
-    y = {}
-    cols = 6
-    last_dir = ""
-    for r,d,f in os.walk("sprites/"):
-        for dir in d:
-            mons[dir] = pg.sprite.LayeredUpdates()
-            x[dir] = 0
-            y[dir] = 0
-        for file in f:
-            if 'png' in file:
-                filename = os.path.join(r,file).replace('\\','/')
-                fdir = filename.split('/')[1]
-                if fdir != last_dir:
-                    last_dir = fdir
-                    load_msg = mon_font.render(f"Loading sprites: {last_dir}",False,FG_ORANGE,SCREEN_BG)
-                    screen.fill(SCREEN_BG)
-                    screen.blit(load_msg,
-                                (SCREEN_W/2 - load_msg.get_width()/2,
-                                 SCREEN_H/2 - load_msg.get_height()/2))
-                    pg.display.flip()
 
-                data = MonsterData(
-                    filepath = filename,
-                    coords = ( 
-                     mon_pane.rect[0] + PAD + x[fdir],
-                     mon_pane.rect[1] + PAD + y[fdir]
-                     )
-                )
-                mons[fdir].add(Monster(data))
-                x[fdir] = (x[fdir] + 40) % (cols * 40)
-                if x[fdir] == 0:
-                    y[fdir] += 40
-
-    stage_sel = list(STAGE_ORDER.keys())[0]
-
-    moused_over = "" 
-    mon_indicator = mon_font.render(moused_over,False,FG_ORANGE,(25,25,25))
+    bank_pane.load_sprites(screen)
 
     while running:
         clock.tick(60)
@@ -116,13 +53,15 @@ def run_gui():
                     running = False
                 if not console.active:
                     if event.key in STAGE_KEYS.keys():
-                        stage_sel = STAGE_KEYS[event.key]
+                        bank_pane.stage_sel = STAGE_KEYS[event.key]
                     elif event.key == K_w:
                         stages = list(STAGE_ORDER.keys())
-                        stage_sel = stages[(stages.index(stage_sel)-1)%len(stages)]
+                        bank_pane.stage_sel = stages[
+                            (stages.index(bank_pane.stage_sel)-1)%len(stages)]
                     elif event.key == K_s:
                         stages = list(STAGE_ORDER.keys())
-                        stage_sel = stages[(stages.index(stage_sel)+1)%len(stages)]
+                        bank_pane.stage_sel = stages[
+                            (stages.index(bank_pane.stage_sel)+1)%len(stages)]
                     elif event.key == K_c:
                         convert_sprites()
                     elif event.key == K_d:
@@ -135,35 +74,17 @@ def run_gui():
                 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    for mon in mons[stage_sel]:
+                    for mon in bank_pane.mons[bank_pane.stage_sel]:
                         if mon.rect.collidepoint(event.pos):
                             data_copy = copy.deepcopy(mon.data)
                             sandbox_pane.add_mon(Monster(data_copy))
-            elif event.type == pg.MOUSEWHEEL:
-                mouse_pos = pg.mouse.get_pos()
-                if mon_pane.rect.collidepoint(mouse_pos):
-                    mon_pane.surf.scroll(0,event.y*25)
-                    for mon in mons[stage_sel]:
-                        mon.rect.y += 25*event.y
-                        mon.data.coords = mon.rect.topleft
-
-        mouse_pos = pg.mouse.get_pos()
-        moused_over = ""
-        for mon in mons[stage_sel]:
-            if mon.rect.collidepoint(mouse_pos) and mon.rect.colliderect(mon_pane.rect) and moused_over != mon.data.name:
-                mon.set_border(FG_WHITE)
-                moused_over = mon.data.name
-                mon_indicator = mon_font.render(mon.data.name,False,FG_ORANGE,(25,25,25))
-            elif mon.border_color != (200,200,200):
-                mon.set_border((200,200,200))
 
         #Draw
         screen.fill(SCREEN_BG)
 
-        for pane in panes:
-            pane.update()
-            screen.blit(pane.surf,pane.rect)
-        
+        bank_pane.update(event_list)
+        bank_pane.draw(screen)
+
         sandbox_pane.update(event_list)
         sandbox_pane.draw(screen)
 
@@ -173,19 +94,8 @@ def run_gui():
         preview_pane.update(event_list)
         preview_pane.draw(screen)
         
-        mon_pane.surf.fill(PANE_BG_DARK)
-        mon_pane_btn.surf = mon_font.render(stage_sel,False,FG_ORANGE,PANE_BG_LITE)
-
-        for mon in mons[stage_sel]:
-            mon.update()
-            mon_pane.surf.blit(mon.surf,(mon.rect.x-mon_pane.rect.left, mon.rect.y-mon_pane.rect.top, 
-                                         mon.rect.w, mon.rect.h))
-
         console.update(event_list)
         console.draw(screen)
-
-        if moused_over:
-            screen.blit(mon_indicator,(pg.mouse.get_pos()[0]+12, pg.mouse.get_pos()[1]-12))
 
         pg.display.flip()
 
