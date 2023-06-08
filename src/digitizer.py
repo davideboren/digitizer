@@ -21,7 +21,7 @@ def run_gui():
     pg.init()
 
     pg.display.set_caption("Digitizer")
-    pygame_icon = pg.image.load('icon.png')
+    pygame_icon = pg.image.load('gfx/icon.png')
     pg.display.set_icon(pygame_icon)
 
     screen = pg.display.set_mode((SCREEN_W, SCREEN_H))

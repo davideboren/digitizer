@@ -14,9 +14,7 @@ class InfoLayer(pg.sprite.Sprite):
         for event in event_list:
             if event.type == INFO_NAMEPLATE_OFF:
                 self.nameplate_enabled = False
-                print("NAME OFF")
             elif event.type == INFO_NAMEPLATE_ON:
-                print("NAME ON")
                 self.nameplate_txt = event.name
                 self.nameplate_enabled = True
 
@@ -25,5 +23,5 @@ class InfoLayer(pg.sprite.Sprite):
             np_x = pg.mouse.get_pos()[0] + 12
             np_y = pg.mouse.get_pos()[1] - 12
             nameplate = self.font.render(self.nameplate_txt,
-                                         False, FG_ORANGE, PANE_BG_LITE)
+                                         False, FG_ORANGE, (25,25,25))
             screen.blit(nameplate, (np_x, np_y))

@@ -32,6 +32,24 @@ class MonsterBankPane(pg.sprite.Sprite):
         self.btn.rect = self.btn.surf.get_rect().move(
             self.border.rect.left + 6, self.border.rect.top + 3)
 
+        self.btn_up_img = pg.image.load('gfx/arrow_up.png')
+        self.btn_up = pg.sprite.Sprite()
+        self.btn_up.surf = pg.Surface((24,24))
+        self.btn_up.surf.blit(self.btn_up_img, (0,0))
+        self.btn_up.surf.set_alpha(150)
+        self.btn_up.rect = pg.rect.Rect(
+            self.border.rect.right - 24, self.border.rect.top,
+            24, 24)
+
+        self.btn_down_img = pg.image.load('gfx/arrow_down.png')
+        self.btn_down = pg.sprite.Sprite()
+        self.btn_down.surf = pg.Surface((24,24))
+        self.btn_down.surf.blit(self.btn_down_img, (0,0))
+        self.btn_down.surf.set_alpha(150)
+        self.btn_down.rect = pg.rect.Rect(
+            self.border.rect.right - 24 - 22, self.border.rect.top,
+            24, 24)
+
         self.stage_sel = list(STAGE_ORDER.keys())[0]
 
         self.moused_over = "" 
@@ -104,6 +122,25 @@ class MonsterBankPane(pg.sprite.Sprite):
                     for mon in self.mons[self.stage_sel]:
                         mon.rect.y += 25*event.y
                         mon.data.coords = mon.rect.topleft
+            
+            elif event.type == pg.MOUSEMOTION:
+                mpos = pg.mouse.get_pos()
+                if self.btn_down.rect.collidepoint(mpos):
+                    self.btn_down.surf.set_alpha(255)
+                elif self.btn_down.surf.get_alpha() != 150:
+                    self.btn_down.surf.set_alpha(150)
+                if self.btn_up.rect.collidepoint(mpos):
+                    self.btn_up.surf.set_alpha(255)
+                elif self.btn_up.surf.get_alpha() != 150:
+                    self.btn_up.surf.set_alpha(150)
+            
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    mpos = pg.mouse.get_pos()
+                    if self.btn_up.rect.collidepoint(mpos):
+                        self.change_stage(-1)
+                    elif self.btn_down.rect.collidepoint(mpos):
+                        self.change_stage(1)
 
         self.btn.surf = self.font.render(
             self.stage_sel, False, FG_ORANGE,PANE_BG_LITE)
@@ -127,6 +164,7 @@ class MonsterBankPane(pg.sprite.Sprite):
                 pg.event.post(ev)
         if not moused and self.nameplate_active:
             self.nameplate_active = False
+            self.moused_over = ""
             pg.event.post(pg.event.Event(INFO_NAMEPLATE_OFF))
 
     def draw(self, screen):
@@ -138,6 +176,9 @@ class MonsterBankPane(pg.sprite.Sprite):
             mon_x = mon.rect.x - self.rect.left
             mon_y = mon.rect.y - self.rect.top
             self.surf.blit(mon.surf, (mon_x, mon_y, mon.rect.w, mon.rect.h))
-            screen.blit(self.border.surf, self.border.rect)
-            screen.blit(self.surf, self.rect)
-            screen.blit(self.btn.surf, self.btn.rect)
+
+        screen.blit(self.border.surf, self.border.rect)
+        screen.blit(self.surf, self.rect)
+        screen.blit(self.btn.surf, self.btn.rect)
+        screen.blit(self.btn_down.surf, self.btn_down.rect)
+        screen.blit(self.btn_up.surf, self.btn_up.rect)
