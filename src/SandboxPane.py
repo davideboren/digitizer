@@ -4,6 +4,7 @@ import pickle
 from config import *
 from Monster import Monster 
 from MonsterData import MonsterData
+from MonsterDataWidget import MonsterDataWidget
 
 class SandboxPane(pg.sprite.Sprite):
 
@@ -25,6 +26,10 @@ class SandboxPane(pg.sprite.Sprite):
         self.mon_sel = None
         self.preview_mon = None
         self.moused_over_mon = None
+        self.mon_data_widget = MonsterDataWidget()
+        self.mon_data_widget.anchor = (self.rect.right - PAD, 
+                                       self.rect.bottom - PAD)
+
         self.font = pg.font.Font('grand9k.ttf',14)
 
         self.keys_enabled = True
@@ -189,6 +194,7 @@ class SandboxPane(pg.sprite.Sprite):
                         self.offset_y = mon.rect.y - mouse_y
                         if mon != self.preview_mon:
                             self.preview_mon = mon
+                            self.mon_data_widget.set_mon(mon.data)
                             pg.event.post(
                                 pg.event.Event(MON_SELECT,
                                                 {"filepath":mon.data.filepath,
@@ -306,6 +312,9 @@ class SandboxPane(pg.sprite.Sprite):
         tab_indicator = self.font.render(str(self.tab), False, 
                                          (200,200,10), (20,20,30))
         surf.blit(tab_indicator, (self.rect.x+8, self.rect.y+2))
+
+        #Widget
+        self.mon_data_widget.draw(surf)
 
         #Mon Indicator
         mpos = pg.mouse.get_pos()
