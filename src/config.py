@@ -41,6 +41,17 @@ STAGE_ORDER = {
     "ultimate": 6,
     "armor":    9
 }
+STAGE_LIFESPAN = {
+    #In Minutes
+    "digitama": 30,
+    "baby":     60,
+    "baby_ii":  90,
+    "child":    120,
+    "adult":    120,
+    "perfect":  120,
+    "ultimate": 120,
+    "armor":    120
+}
 STAGE_KEYS = {
     K_1 : "digitama",
     K_2 : "baby",

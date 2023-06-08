@@ -1,3 +1,5 @@
+from config import *
+
 class MonsterData:
     def __init__(self, **kwargs):
         #Universal
@@ -6,7 +8,7 @@ class MonsterData:
         self.name = kwargs.get('name', default_name)
         default_stage = self.filepath.split('/')[-2]
         self.stage = kwargs.get('stage', default_stage)
-        self.lifespan = kwargs.get('lifespan', 50)
+        self.lifespan = kwargs.get('lifespan', STAGE_LIFESPAN[self.stage])
         self.move_style = kwargs.get('move_style', '"walk"')
         default_speed = 0 if self.stage == "digitama" else 2
         self.speed = kwargs.get('speed', default_speed)
