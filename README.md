@@ -13,4 +13,5 @@ Both Tyrannomon and Digitizer are built around the sprite format of Tortoiseshel
 https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/
 
 
-![prev](https://github.com/davideboren/digitizer/assets/7462768/617cc406-cbde-4945-9835-3ad847f3fd26)
+
+![preview](https://github.com/davideboren/digitizer/assets/7462768/63254162-c865-48ac-9b72-7a76d46cfa41)
