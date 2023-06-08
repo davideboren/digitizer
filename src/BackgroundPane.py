@@ -8,15 +8,16 @@ class BackgroundPane(pg.sprite.Sprite):
     def __init__(self):
         super(BackgroundPane, self).__init__()
 
-        self.surf = pg.Surface((BG_PANE_W, BG_PANE_H))
-        self.rect = self.surf.get_rect().move(1036 + PAD, 24 + PAD)
+        self.border = pg.sprite.Sprite()
+        self.border.surf = pg.Surface((BG_PANE_W, BG_PANE_H))
+        self.border.surf.fill(SCREEN_BG)
+        self.border.rect = self.border.surf.get_rect().move(1036 + PAD, 24 + PAD)
+        pg.draw.rect(self.border.surf, FG_WHITE,
+                    (0,0,self.border.rect.w, self.border.rect.h), 
+                    border_radius=4, width=2)
 
-        pg.draw.rect(self.surf, PANE_BG_DARK,
-                    (0,0,self.rect.w, self.rect.h), 
-                    border_radius=4)
-        pg.draw.rect(self.surf, FG_WHITE,
-                    (0,0,self.rect.w, self.rect.h), 
-                    border_radius=4, width = 2)
+        self.surf = pg.Surface((BG_PANE_W - 4, BG_PANE_H - 4))
+        self.rect = self.surf.get_rect().move(1038 + PAD, 26 + PAD)
 
         self.bgs = {}
         self.bg_sel = None
@@ -60,15 +61,9 @@ class BackgroundPane(pg.sprite.Sprite):
                     for bg in self.bgs:
                         bg.rect.y += 25*event.y
 
-    def draw(self, surf):
-        pg.draw.rect(self.surf, PANE_BG_DARK,
-                    (0,0,self.rect.w, self.rect.h), 
-                    border_radius=4)
-        pg.draw.rect(self.surf, FG_WHITE,
-                    (0,0,self.rect.w, self.rect.h), 
-                    border_radius=4, width = 2)
-
+    def draw(self, screen):
+        screen.blit(self.border.surf, self.border.rect)
+        self.surf.fill(PANE_BG_DARK)
         for bg in self.bgs:
             self.surf.blit(bg.surf, bg.rect)
-
-        surf.blit(self.surf, self.rect)
+        screen.blit(self.surf, self.rect)
