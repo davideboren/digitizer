@@ -14,4 +14,5 @@ https://withthewill.net/threads/full-color-digimon-dot-sprites.25843/
 
 
 
-![preview](https://github.com/davideboren/digitizer/assets/7462768/63254162-c865-48ac-9b72-7a76d46cfa41)
+
+![Animation](https://github.com/davideboren/digitizer/assets/7462768/c17890f0-5495-4b67-a3d4-ae71261cb358)
