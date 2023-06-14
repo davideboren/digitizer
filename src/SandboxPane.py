@@ -1,4 +1,5 @@
 import pygame as pg
+import os
 import pickle
 
 from config import *
@@ -98,6 +99,9 @@ class SandboxPane(pg.sprite.Sprite):
             pickle.dump(out,file)
 
     def load(self, filename):
+        if not os.path.exists(filename):
+            uc_msg(f"File {filename} not found.")
+            return False
         self.tab = 0
         self.mons = []
         evos = {}
@@ -113,6 +117,7 @@ class SandboxPane(pg.sprite.Sprite):
            for mon in tab:
                for evo_name in mon.data.evos:
                    mon.evos.append(evos[evo_name])
+        return True
 
     def export(self):
         out_monster_names = ""
@@ -260,8 +265,8 @@ class SandboxPane(pg.sprite.Sprite):
                 uc_msg("Saved as " + savefile)
             elif event.type == CMD_LOAD:
                 if event.filename.endswith(".pkl"):
-                    self.load(event.filename)
-                    uc_msg("Loaded " + event.filename)
+                    if self.load(event.filename):
+                        uc_msg("Loaded " + event.filename)
                 else:
                     uc_msg("Invalid filename.")
             elif event.type == CMD_EXPORT:
