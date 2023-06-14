@@ -100,14 +100,12 @@ class SandboxPane(pg.sprite.Sprite):
     def load(self, filename):
         self.tab = 0
         self.mons = []
-        self.mons.append(pg.sprite.LayeredUpdates())
-        self.mons.append(pg.sprite.LayeredUpdates())
-        self.mons.append(pg.sprite.LayeredUpdates())
-        self.mons.append(pg.sprite.LayeredUpdates())
         evos = {}
         with open(filename,'rb') as file:
             mon_data = pickle.load(file)
             for data in mon_data:
+                if data.tab > len(self.mons) - 1:
+                    self.add_tab()
                 mon = Monster(data)
                 evos[data.name] = mon
                 self.add_mon(mon)
