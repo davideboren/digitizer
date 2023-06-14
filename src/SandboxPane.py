@@ -35,6 +35,8 @@ class SandboxPane(pg.sprite.Sprite):
 
         self.keys_enabled = True
 
+        self.current_save = ""
+
         #Draw grid
         pg.draw.rect(self.surf, (20,20,30), 
                     (0,0,self.rect.w, self.rect.h), border_radius = 4)
@@ -97,6 +99,7 @@ class SandboxPane(pg.sprite.Sprite):
                 out.append(mon.data)
         with open(filename,'wb') as file:
             pickle.dump(out,file)
+        self.current_save = filename
 
     def load(self, filename):
         if not os.path.exists(filename):
@@ -117,6 +120,7 @@ class SandboxPane(pg.sprite.Sprite):
            for mon in tab:
                for evo_name in mon.data.evos:
                    mon.evos.append(evos[evo_name])
+        self.current_save = filename
         return True
 
     def export(self):
@@ -254,7 +258,9 @@ class SandboxPane(pg.sprite.Sprite):
             elif event.type == CMD_INACTIVE:
                 self.keys_enabled = True
             elif event.type == CMD_SAVE:
-                if event.filename == "":
+                if event.filename == "" and self.current_save != "":
+                    savefile = self.current_save
+                elif event.filename == "":
                     uc_msg("Please enter a filename")
                     break
                 elif event.filename.endswith(".pkl"):

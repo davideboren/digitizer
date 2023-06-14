@@ -42,8 +42,11 @@ class MicroConsole(pg.sprite.Sprite):
         pg.event.post(pg.event.Event(CMD_INACTIVE))
 
     def send_cmd(self):
-        if self.input.startswith("save "):
-            savefile = self.input.split(" ")[1]
+        if self.input.startswith("save"):
+            if len(self.input.split(" ")) > 1:
+                savefile = self.input.split(" ")[1]
+            else:
+                savefile = ""
             pg.event.post(pg.event.Event(CMD_SAVE,
                                          {"filename" : savefile}))
         elif self.input.startswith("load "):
