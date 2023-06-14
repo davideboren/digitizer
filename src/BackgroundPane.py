@@ -22,7 +22,9 @@ class BackgroundPane(pg.sprite.Sprite):
         self.bgs = {}
         self.bg_sel = None
         self.bg_filepath = None
-        bg_x = BG_PANE_W/2 - 64
+
+        x_margin = round(BG_PANE_W - 128 - 4)/3
+        bg_x = x_margin
         bg_y = PAD
 
         for r,d,f in os.walk("bg/"):
@@ -31,13 +33,17 @@ class BackgroundPane(pg.sprite.Sprite):
                     filepath = os.path.join(r,file).replace('\\','/')
                     bg = pg.sprite.Sprite()
                     bg.img = pg.image.load(filepath)
-                    bg.surf = pg.Surface((128+2,128+2))
+                    bg.surf = pg.Surface((64+2, 64+2))
                     bg.surf.fill(FG_WHITE)
-                    bg.rect = pg.Rect(1,1,128+2,128+2)
-                    bg.surf.blit(pg.transform.scale(bg.img,(128,128)),bg.rect)
+                    bg.rect = pg.Rect(1, 1, 64+2, 64+2)
+                    bg.surf.blit(bg.img, bg.rect)
                     bg.rect.move_ip(bg_x,bg_y)
                     self.bgs[bg] = filepath
-                    bg_y += 128 + PAD*2
+                    if bg_x == x_margin:
+                        bg_x = 64 + x_margin*2
+                    else:
+                        bg_x = x_margin
+                        bg_y += 64 + PAD*2
                     if self.bg_sel == None:
                         self.bg_sel = bg
                         self.bg_filepath = filepath 
