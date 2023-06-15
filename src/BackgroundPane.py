@@ -36,7 +36,7 @@ class BackgroundPane(pg.sprite.Sprite):
                     bg.surf = pg.Surface((64+2, 64+2))
                     bg.surf.fill(FG_WHITE)
                     bg.rect = pg.Rect(1, 1, 64+2, 64+2)
-                    bg.surf.blit(bg.img, bg.rect)
+                    bg.surf.blit(pg.transform.scale(bg.img, (64, 64)), bg.rect)
                     bg.rect.move_ip(bg_x,bg_y)
                     self.bgs[bg] = filepath
                     if bg_x == x_margin:
