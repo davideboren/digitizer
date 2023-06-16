@@ -252,7 +252,8 @@ class SandboxPane(pg.sprite.Sprite):
                         mon.data.coords = (mon.rect.x, mon.rect.y)
             elif event.type == BG_SELECT:
                 if self.preview_mon:
-                    self.preview_mon.data.bg = f'"{event.filepath}"'
+                    path = event.filepath.replace('png', 'bmp')
+                    self.preview_mon.data.bg = f'"{path}"'
             elif event.type == CMD_ACTIVE:
                 self.keys_enabled = False
             elif event.type == CMD_INACTIVE:
