@@ -58,7 +58,12 @@ class MicroConsole(pg.sprite.Sprite):
         elif self.input.startswith("new_tab"):
             pg.event.post(pg.event.Event(CMD_NEW_TAB))
         elif self.input.startswith("convert_sprites"):
-            pg.event.post(pg.event.Event(CMD_CONVERT_SPRITES))
+            if len(self.input.split(" ")) > 1:
+                path = self.input.split(" ")[1]
+            else:
+                path = ""
+            pg.event.post(pg.event.Event(CMD_CONVERT_SPRITES,
+                          {"path" : path}))
         else:
             uc_msg("Unrecognized command")
 

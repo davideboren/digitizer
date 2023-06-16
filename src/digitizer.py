@@ -67,7 +67,7 @@ def run_gui():
                             sandbox_pane.add_mon(Monster(data_copy))
 
             elif event.type == CMD_CONVERT_SPRITES:
-                convert_sprites()
+                convert_sprites(event.path)
 
         #Draw
         screen.fill(SCREEN_BG)
@@ -78,15 +78,20 @@ def run_gui():
 
         pg.display.flip()
 
-def convert_sprites():
-    if not os.path.exists("out/sprites"):
-        os.mkdir("out/sprites")
-    for r, d, f in os.walk("sprites"):
+def convert_sprites(path):
+    if path == "":
+        path = "sprites"
+    out_path = f"out/{path}"
+    if not os.path.exists("out"):
+        os.mkdir("out")
+    if not os.path.exists(out_path):
+        os.mkdir(out_path)
+    for r, d, f in os.walk(path):
         for dir in d:
-            if not os.path.exists(os.path.join("out/sprites",dir)):
-                os.mkdir(os.path.join("out/sprites",dir))
+            if not os.path.exists(os.path.join(out_path,dir)):
+                os.mkdir(os.path.join(out_path,dir))
         for file in f:
-            if "png" in file:
+            if "png" in file or "bmp" in file:
                 filepath = os.path.join(r,file)
                 output = os.path.join("out",filepath)
                 
@@ -94,16 +99,18 @@ def convert_sprites():
                 
                 spr = Image.open(filepath)
                 
-                sprW, sprH = spr.size
-                for h in range(0,sprH):
-                    for w in range(0,sprW):
-                        if(spr.getpixel((w,h)) == (255,0,255,255)):
-                            print("WARNING: Found #FF00FF pixel")
-                        if(spr.getpixel((w,h))[3] == 0):
-                            spr.putpixel((w,h),(255,0,255,255))
+                if "png" in file:
+                    sprW, sprH = spr.size
+                    for h in range(0,sprH):
+                        for w in range(0,sprW):
+                            if(spr.getpixel((w,h)) == (255,0,255,255)):
+                                print("WARNING: Found #FF00FF pixel")
+                            if(spr.getpixel((w,h))[3] == 0):
+                                spr.putpixel((w,h),(255,0,255,255))
                 
                 spr = spr.convert("RGB")
                 spr.save(output.replace("png","bmp"))
+
         print("Done!")
 
 def main():

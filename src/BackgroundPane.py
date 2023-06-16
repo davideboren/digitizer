@@ -27,9 +27,9 @@ class BackgroundPane(pg.sprite.Sprite):
         bg_x = x_margin
         bg_y = PAD
 
-        for r,d,f in os.walk("bg/"):
+        for r,d,f in os.walk("bg"):
             for file in f:
-                if 'bmp' in file:
+                if 'bmp' in file or 'png' in file:
                     filepath = os.path.join(r,file).replace('\\','/')
                     bg = pg.sprite.Sprite()
                     bg.img = pg.image.load(filepath)
