@@ -166,7 +166,7 @@ class SandboxPane(pg.sprite.Sprite):
                 + str(mon.data.lifespan) + ',\n\t' \
                 + mon.data.move_style + ',\n\t' \
                 + str(mon.data.speed) + ',\n\t' \
-                + mon.data.bg + ',\n\t' \
+                + mon.data.bg.replace(".png",".bmp") + ',\n\t' \
                 + '{' + evos + '}' \
                 + '\n},\n'
 
@@ -252,8 +252,7 @@ class SandboxPane(pg.sprite.Sprite):
                         mon.data.coords = (mon.rect.x, mon.rect.y)
             elif event.type == BG_SELECT:
                 if self.preview_mon:
-                    path = event.filepath.replace('png', 'bmp')
-                    self.preview_mon.data.bg = f'"{path}"'
+                    self.preview_mon.data.bg = f'"{event.filepath}"'
             elif event.type == CMD_ACTIVE:
                 self.keys_enabled = False
             elif event.type == CMD_INACTIVE:
