@@ -8,6 +8,15 @@ class MicroConsole(pg.sprite.Sprite):
     def __init__(self):
         super(MicroConsole, self).__init__()
 
+        self.commands = {
+            # cmd : applicable filename pattern
+            'save' : '.pkl',
+            'load' : '.pkl',
+            'export' : '',
+            'new_tab' : '',
+            'convert_sprites' : '',
+        }
+
         self.surf = pg.Surface((SCREEN_W, 24))
         self.rect = self.surf.get_rect()
         self.surf.fill(CONSOLE_BG_COLOR)
@@ -20,6 +29,7 @@ class MicroConsole(pg.sprite.Sprite):
         self.output = ""
         self.tabbing = False
         self.tab_cmd = []
+        self.prefix = ""
         self.tab_options = []
         self.tab_idx = 0
 
@@ -40,6 +50,35 @@ class MicroConsole(pg.sprite.Sprite):
         self.font_color = FG_LITE_GRAY
         self.active = False
         pg.event.post(pg.event.Event(CMD_INACTIVE))
+
+    def tab_complete(self):
+        if not self.tabbing:
+            self.prefix = ''
+            self.tab_options = []
+            self.tab_cmd = self.input.lstrip(' ').split(' ')
+            self.tabbing = True
+        if len(self.tab_cmd) == 1:
+            for c in list(self.commands.keys()):
+                if c.startswith(self.tab_cmd[0]):
+                    if c not in self.tab_options:
+                        self.tab_options.append(c)
+        elif len(self.tab_cmd) == 2 and self.tab_cmd[0] in self.commands:
+            self.prefix = self.tab_cmd[0] + ' '
+            files = glob.glob(self.tab_cmd[1] + '*' )
+            filetype = self.commands[self.tab_cmd[0]]
+            for f in files:
+                if not f.endswith(filetype):
+                    continue
+                if f.startswith(self.tab_cmd[1]):
+                    if f not in self.tab_options:
+                        self.tab_options.append(f)
+
+        if self.tab_options:
+            target = self.tab_options[self.tab_idx]
+        else:
+            target = ''
+        self.input = self.prefix + target
+        self.tab_idx = (self.tab_idx + 1) % len(self.tab_options)
 
     def send_cmd(self):
         if self.input.startswith("save"):
@@ -96,30 +135,11 @@ class MicroConsole(pg.sprite.Sprite):
                     self.send_cmd()
                     self.make_inactive()
                 elif event.key == K_TAB:
-                    if not self.tabbing:
-                        self.tab_cmd = self.input.split(' ')
-                        self.tabbing = True
-                    if self.tab_cmd[0] == "":
-                        self.tab_options = [
-                            'save ', 
-                            'load ', 
-                            'new_tab', 
-                            'export', 
-                            'convert_sprites']
-                        self.input = self.tab_options[self.tab_idx]
-                    elif self.tab_cmd[0] == "load":
-                        prefix = ""
-                        if len(self.tab_cmd) > 1:
-                            prefix = self.tab_cmd[1]
-                        self.tab_options = glob.glob(prefix + "*.pkl") 
-                        if self.tab_options:
-                            file = self.tab_options[self.tab_idx]
-                            self.input = "load " + file
-                    if len(self.tab_options):
-                        self.tab_idx = (self.tab_idx + 1) % len(self.tab_options)
+                    self.tab_complete()
                 else:
                     self.input += event.unicode
 
+        #visuals
         self.ticks += 1
         if self.ticks >= 30:
             if self.active:
