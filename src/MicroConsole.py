@@ -62,23 +62,26 @@ class MicroConsole(pg.sprite.Sprite):
                 if c.startswith(self.tab_cmd[0]):
                     if c not in self.tab_options:
                         self.tab_options.append(c)
-        elif len(self.tab_cmd) == 2 and self.tab_cmd[0] in self.commands:
+            if not self.tab_options:
+                self.prefix = self.tab_cmd[0]
+        elif len(self.tab_cmd) == 2:
             self.prefix = self.tab_cmd[0] + ' '
-            files = glob.glob(self.tab_cmd[1] + '*' )
-            filetype = self.commands[self.tab_cmd[0]]
-            for f in files:
-                if not f.endswith(filetype):
-                    continue
-                if f.startswith(self.tab_cmd[1]):
-                    if f not in self.tab_options:
-                        self.tab_options.append(f)
+            if self.tab_cmd[0] in self.commands:
+                files = glob.glob(self.tab_cmd[1] + '*' )
+                filetype = self.commands[self.tab_cmd[0]]
+                for f in files:
+                    if not f.endswith(filetype):
+                        continue
+                    if f.startswith(self.tab_cmd[1]):
+                        if f not in self.tab_options:
+                            self.tab_options.append(f)
 
         if self.tab_options:
             target = self.tab_options[self.tab_idx]
+            self.tab_idx = (self.tab_idx + 1) % len(self.tab_options)
         else:
             target = ''
         self.input = self.prefix + target
-        self.tab_idx = (self.tab_idx + 1) % len(self.tab_options)
 
     def send_cmd(self):
         if self.input.startswith("save"):
