@@ -91,8 +91,11 @@ class MicroConsole(pg.sprite.Sprite):
                 savefile = ""
             pg.event.post(pg.event.Event(CMD_SAVE,
                                          {"filename" : savefile}))
-        elif self.input.startswith("load "):
-            loadfile = self.input.split(" ")[1]
+        elif self.input.startswith("load"):
+            if len(self.input.split(' ')) == 1:
+                loadfile = ''
+            else:
+                loadfile = self.input.split(" ")[1]
             pg.event.post(pg.event.Event(CMD_LOAD,
                                          {"filename" : loadfile}))
         elif self.input.startswith("export"):
