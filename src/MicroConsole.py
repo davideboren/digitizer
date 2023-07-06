@@ -15,6 +15,8 @@ class MicroConsole(pg.sprite.Sprite):
             'export' : '',
             'new_tab' : '',
             'convert_sprites' : '',
+            'reload_sprites' : '',
+            'set_palette' : '.gpl'
         }
 
         self.surf = pg.Surface((SCREEN_W, 24))
@@ -108,6 +110,15 @@ class MicroConsole(pg.sprite.Sprite):
             else:
                 path = ""
             pg.event.post(pg.event.Event(CMD_CONVERT_SPRITES,
+                          {"path" : path}))
+        elif self.input.startswith("reload_sprites"):
+            pg.event.post(pg.event.Event(CMD_RELOAD_SPRITES))
+        elif self.input.startswith("set_palette"):
+            if len(self.input.split(" ")) > 1:
+                path = self.input.split(" ")[1]
+            else:
+                path = "palettes/aap-64.gpl"
+            pg.event.post(pg.event.Event(CMD_SET_PALETTE,
                           {"path" : path}))
         else:
             uc_msg("Unrecognized command")
