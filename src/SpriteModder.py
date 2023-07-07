@@ -57,19 +57,30 @@ class SpriteModder():
         p_img = Image.new("P",(16,16))
         p_img.putpalette(self.palette)
 
-        spr = Image.open("out/sprites/child/Agumon.bmp")
-        spr_rgb = spr.convert("RGB")
-        spr_p = spr_rgb.quantize(colors=65, palette=p_img, dither=0)
 
-        #Manually convert back to alpha png while retaining palette
-        spr_w, spr_h = spr_p.size
-        spr_out = Image.new("RGBA", (spr_w, spr_h))
-        for h in range(0, spr_h):
-            for w in range(0, spr_w):
-                px = spr_p.getpixel((w, h))
-                spr_out.putpixel((w, h), self.palette_map[px])
+        for r, d, f in os.walk("out/sprites"):
+            for dir in d:
+                print(dir)
+            for file in f:
+                print(r)
+                print("Palettizing " + file)
+                filepath = os.path.join(r, file)
+                outfile = file.replace("bmp","png")
+                output = os.path.join("palettized_sprites",r,outfile)
+
+                spr = Image.open(filepath)
+                spr_rgb = spr.convert("RGB")
+                spr_p = spr_rgb.quantize(colors=65, palette=p_img, dither=0)
+
+                #Manually convert back to alpha png while retaining palette
+                spr_w, spr_h = spr_p.size
+                spr_out = Image.new("RGBA", (spr_w, spr_h))
+                for h in range(0, spr_h):
+                    for w in range(0, spr_w):
+                        px = spr_p.getpixel((w, h))
+                        spr_out.putpixel((w, h), self.palette_map[px])
                 
-        spr_out.save("agu.png")
+                spr_out.save(output)
         
     def convert_sprites(self, path):
         if path == "":

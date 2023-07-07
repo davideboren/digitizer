@@ -2,3 +2,4 @@
 *.pkl
 out
 .vscode/launch.json
+palettized_sprites
