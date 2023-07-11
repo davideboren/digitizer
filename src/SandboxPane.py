@@ -36,6 +36,7 @@ class SandboxPane(pg.sprite.Sprite):
         self.keys_enabled = True
 
         self.current_save = ""
+        self.current_bg = '"bg/bg_0.bmp"'
 
         #Draw grid
         pg.draw.rect(self.surf, (20,20,30), 
@@ -50,7 +51,7 @@ class SandboxPane(pg.sprite.Sprite):
                     (0, 0, self.rect.w, self.rect.h), 
                     border_radius=4, width = 2)
         
-    def add_mon(self, mon):
+    def add_mon(self, mon, keep_bg=False):
         if mon.data.tab == -1:
             mon.data.tab = self.tab
         tab_mon_names = self.get_mon_names(mon.data.tab)
@@ -60,6 +61,8 @@ class SandboxPane(pg.sprite.Sprite):
             for name in all_mon_names:
                 if name == mon.data.name:
                     instances += 1
+            if not keep_bg:
+                mon.data.bg = self.current_bg
             self.mons[mon.data.tab].add(mon)
             if instances != 0:
                 mon.data.name = mon.data.name + f"_{instances}"
@@ -107,6 +110,7 @@ class SandboxPane(pg.sprite.Sprite):
             return False
         self.tab = 0
         self.mons = []
+        self.current_bg = '"bg/bg_0.bmp"'
         evos = {}
         with open(filename,'rb') as file:
             mon_data = pickle.load(file)
@@ -115,7 +119,7 @@ class SandboxPane(pg.sprite.Sprite):
                     self.add_tab()
                 mon = Monster(data)
                 evos[data.name] = mon
-                self.add_mon(mon)
+                self.add_mon(mon, keep_bg=True)
         for tab in self.mons:
            for mon in tab:
                for evo_name in mon.data.evos:
@@ -253,6 +257,7 @@ class SandboxPane(pg.sprite.Sprite):
             elif event.type == BG_SELECT:
                 if self.preview_mon:
                     self.preview_mon.data.bg = f'"{event.filepath}"'
+                self.current_bg = f'"{event.filepath}"'
             elif event.type == CMD_ACTIVE:
                 self.keys_enabled = False
             elif event.type == CMD_INACTIVE:
